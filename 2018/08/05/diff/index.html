@@ -108,20 +108,24 @@
 
 
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="诗和远方">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。  传统的diff算法diff算法，即微分算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【理论篇】分析diff算法">
+<meta property="og:url" content="http://yoursite.com/2018/08/05/diff/index.html">
 <meta property="og:site_name" content="诗和远方">
+<meta property="og:description" content="diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。  传统的diff算法diff算法，即微分算法。">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-04T18:21:31.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="诗和远方">
+<meta name="twitter:title" content="【理论篇】分析diff算法">
+<meta name="twitter:description" content="diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。  传统的diff算法diff算法，即微分算法。">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/08/05/diff/"/>
 
 
 
@@ -131,7 +135,7 @@
   };
 </script>
 
-  <title>诗和远方</title>
+  <title>【理论篇】分析diff算法 | 诗和远方</title>
   
 
 
@@ -178,8 +182,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -216,7 +219,7 @@
         
         
           
-          <li class="menu-item menu-item-home menu-item-active">
+          <li class="menu-item menu-item-home">
     <a href="/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
   </li>
@@ -268,9 +271,9 @@
           
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -302,11 +305,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/05/diff/" itemprop="url">
-                  【理论篇】分析diff算法
-                </a>
+          <h1 class="post-title" itemprop="name headline">【理论篇】分析diff算法
               
             
           </h1>
@@ -369,9 +368,7 @@
       
 
       
-        
-          
-            <blockquote>
+        <blockquote>
 <p>diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。</p>
 </blockquote>
 <h1 id="传统的diff算法"><a href="#传统的diff算法" class="headerlink" title="传统的diff算法"></a>传统的diff算法</h1><p>diff算法，即微分算法。计算一颗树形结构转换成另一颗树形结构的最少操作，是一个复杂且值得研究的问题。传统diff算法通过循环递归对节点进行依次对比，效率低下，算法复杂度达到O(n^3)，其中n是树中节点的总数。这意味着如果要展示1000个节点，就要依次执行上十亿次的比较。这种指数型的性能消耗对于前端渲染场景来说太可怕了！</p>
@@ -410,8 +407,6 @@
 <p>以A为例，在新集合中，发现A的lastIndex = 1，旧集合中oldIndex = 0，此时lastIndex &gt; oldIndex，则将A进行移动，并将lastIndex更新为新集合中A的位置。A.oldIndex此时为1。进入下一个节点的判断……</p>
 <h3 id="react中diff的不足与待优化的点？"><a href="#react中diff的不足与待优化的点？" class="headerlink" title="react中diff的不足与待优化的点？"></a>react中diff的不足与待优化的点？</h3><p>如果A、B、C、D更新为D、A、B、C，理论上只要移动D即可，然而由于D在就集合中的位置是最大的，导致实际是A、B、C移动到D之后。因此建议在开发过程中，尽量减少类似将最后一个节点移动到列表首部的操作，当节点数量过大或更新操作过于频繁时，这在一定程度上会影响react的渲染性能。</p>
 
-          
-        
       
     </div>
 
@@ -424,6 +419,35 @@
     
 
     
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxPay.jpeg" alt="leeing 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/aliPay.jpeg" alt="leeing 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
 
     
 
@@ -431,191 +455,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/05/eventLoop/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="leeing">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/WechatIMG1.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="诗和远方">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/05/eventLoop/" itemprop="url">
-                  【基础篇】浏览器中的Event Loop
-                </a>
-              
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
+              <a href="/2018/08/05/eventLoop/" rel="next" title="【基础篇】浏览器中的Event Loop">
+                <i class="fa fa-chevron-left"></i> 【基础篇】浏览器中的Event Loop
+              </a>
             
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-08-05 02:17:41 / 修改时间：02:18:45" itemprop="dateCreated datePublished" datetime="2018-08-05T02:17:41+08:00">2018-08-05</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>在讲Event loop之前，我们先思考一个问题</p>
-<h2 id="js为什么是单线程？"><a href="#js为什么是单线程？" class="headerlink" title="js为什么是单线程？"></a>js为什么是单线程？</h2><p>原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题</p>
-<p>好了，接下来我们开始讲Event loop</p>
-<blockquote>
-<p>简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种Task）队列中。一旦执行栈为空，Event Loop就会从Task队列中拿出需要执行的代码并放入执行栈中执行，所以本质上来说，js中的异步行为还是同步的。</p>
-</blockquote>
-<p>我们看下以下代码，以下代码输出’1’, ‘3’, ‘2’<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'1'</span>);</span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'2'</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'3'</span>);</span><br><span class="line"><span class="comment">//'1'</span></span><br><span class="line"><span class="comment">//'3'</span></span><br><span class="line"><span class="comment">//'2'</span></span><br></pre></td></tr></table></figure></p>
-<p>之前对setTimeout理解有偏差，虽然设置了为0，其实还是异步，是因为html5标准规定这个函数的第二个参数不得小于4ms，不足会自动增加。</p>
-<h2 id="Task队列分为两种"><a href="#Task队列分为两种" class="headerlink" title="Task队列分为两种"></a>Task队列分为两种</h2><ul>
-<li><p>微任务microtask，es6中称为jobs。以下这些行为属于微任务</p>
-<ul>
-<li>process.nextTick</li>
-<li>promise</li>
-<li>Object.observe</li>
-<li>MutationObserver</li>
-</ul>
-</li>
-<li><p>宏任务macrotask，es6中称为task。以下这些行为属于宏任务</p>
-<ul>
-<li>script</li>
-<li>setTimeout</li>
-<li>setInterval</li>
-<li>setImmediate</li>
-<li>I/O</li>
-<li>UI rendering</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>误区：很多人认为微任务快于宏任务，其实是错误的。因为宏任务汇中包括了script，浏览器会先执行一个宏任务，接下来有异步代码的话就先执行微任务。</p>
-</blockquote>
-<p>正确的一次Event loop顺序应该是这样的：</p>
-<ol>
-<li>执行同步代码（这属于宏任务）</li>
-<li>执行栈为空，查询是否有微任务需要执行</li>
-<li>执行所有微任务</li>
-<li>必要的话渲染UI</li>
-<li>开始下一轮Event loop，执行宏任务中的异步代码</li>
-</ol>
-<p>通过上述的Event loop顺序可知，如果宏任务中的异步代码有大量的计算并且需要操作DOM的话，为了更快的界面响应，我们可以把操作DOM放入微任务中。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -625,14 +486,15 @@
   </article>
 
 
-    
-  </section>
-
-  
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -653,8 +515,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -749,6 +620,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#传统的diff算法"><span class="nav-number">1.</span> <span class="nav-text">传统的diff算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#react中的diff算法"><span class="nav-number">2.</span> <span class="nav-text">react中的diff算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#diff策略"><span class="nav-number">2.0.1.</span> <span class="nav-text">diff策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tree-diff"><span class="nav-number">2.0.2.</span> <span class="nav-text">tree diff</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#component-diff"><span class="nav-number">2.0.3.</span> <span class="nav-text">component diff</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#element-diff"><span class="nav-number">2.0.4.</span> <span class="nav-text">element diff</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#那么具体是怎么移动的呢？"><span class="nav-number">2.0.4.1.</span> <span class="nav-text">那么具体是怎么移动的呢？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#react中diff的不足与待优化的点？"><span class="nav-number">2.0.5.</span> <span class="nav-text">react中diff的不足与待优化的点？</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -886,6 +773,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
 
   
 
