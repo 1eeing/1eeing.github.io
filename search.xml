@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[【理论篇】分析diff算法]]></title>
+    <url>%2F2018%2F08%2F05%2Fdiff%2F</url>
+    <content type="text"><![CDATA[diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。 传统的diff算法diff算法，即微分算法。计算一颗树形结构转换成另一颗树形结构的最少操作，是一个复杂且值得研究的问题。传统diff算法通过循环递归对节点进行依次对比，效率低下，算法复杂度达到O(n^3)，其中n是树中节点的总数。这意味着如果要展示1000个节点，就要依次执行上十亿次的比较。这种指数型的性能消耗对于前端渲染场景来说太可怕了！ react中的diff算法diff策略首先，我们需要知道react的diff算法有3个策略 WebUI中DOM节点跨层级的移动操作特别少，可以忽略不计 拥有相同类的两个组件将会生成相似的树形结构，拥有不同类的两个组件将会生成不同的属性结构 对于同一层级的一组子节点，它们可以通过唯一id进行区分 tree diff基于策略一，React对树的算法进行了简洁明了的优化，即对树进行分层比较，两棵树只会对同一层级进行比较。当发现节点不存在时，测该节点及其子节点会全部被删掉，不会进行进一步的比较。 如果出现了节点跨层级的移动，diff会有怎样的表现呢？ 假设有A、B两个父节点，a、b两个子节点，形如A-&gt;a,B-&gt;b，当a从A之下移动到A、B平级时，当A发现a不在了，则会删除a及a的子节点，当A、B这一层级发现多出了a时，则会创建一个a。 这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。component diffreact是基于组件构建应用的，对于组件间的比较所采取的策略也是非常简洁、高效的。 如果是同一类型的组件，按照原策略继续比较Virtual Dom树即可 如果不是，则将该组件判断为dirty component，从而替换整个组件下的所有子节点。 对于同一类型的组件，有可能其Virtual Dom没有任何变化，如果能够确切的知道这点，那么就可以节省大量的diff运算时间。因此react提供shouldComponentUpdate()来判断该组件是否需要进行diff算法分析。 这里存在一个问题，如果有一个组件D，下面有E、F两个子节点，当D变为G时，虽然子节点依然是E、F，但react会认为它是不同类型的组件，会直接删除D，重新创建G，尽管D和G结构相似。这时虽然diff会影响性能，但正如diff策略二所言：不同类型的组件很少存在相似dom树的情况，因此这种极端因素很难在实际开发过程中造成重大的影响。 element diff当节点处于同一层级时，diff提供了3种节点操作。 增 INSERT_MARKUP 删 REMOVE_NODE 移 MOVE_EXISTING 增和删比较好理解，这里不再赘述了，这里主要讲一下“移”。按照diff策略三，我们在同一层级的节点上加入了唯一id，以下简称key。 当没有添加key时，移是比较蛋疼的，假设有一组旧节点A、B、C、D和一组新节点B、A、D、C，此时diff发现 B!=A，则创建并插入B至新集合，删除旧集合A，以此类推，创建并插入A、D、C，删除B、C、D。这怎么玩？ 当有了key之后，那就愉快多了。依然是上述的两组新旧节点，此时diff通过key发现新旧集合中的节点都是相同的节点，因此无需进行节点删除和创建，只需要将旧集合中节点的位置进行移动即可。 那么具体是怎么移动的呢？依然是上述的A、B、C、D和B、A、D、C。首先对新集合中的节点进行遍历，通过key判断新旧集合中是否存在相同的节点，如果存在，则移动。但在移动之前需要将当前节点在旧集合中的位置oldIndex与lastIndex进行比较，如果lastIndex &gt; oldIndex，则进行移动。 以A为例，在新集合中，发现A的lastIndex = 1，旧集合中oldIndex = 0，此时lastIndex &gt; oldIndex，则将A进行移动，并将lastIndex更新为新集合中A的位置。A.oldIndex此时为1。进入下一个节点的判断…… react中diff的不足与待优化的点？如果A、B、C、D更新为D、A、B、C，理论上只要移动D即可，然而由于D在就集合中的位置是最大的，导致实际是A、B、C移动到D之后。因此建议在开发过程中，尽量减少类似将最后一个节点移动到列表首部的操作，当节点数量过大或更新操作过于频繁时，这在一定程度上会影响react的渲染性能。]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>React</tag>
+        <tag>diff算法</tag>
+        <tag>学习笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【基础篇】浏览器中的Event Loop]]></title>
+    <url>%2F2018%2F08%2F05%2FeventLoop%2F</url>
+    <content type="text"><![CDATA[在讲Event loop之前，我们先思考一个问题 js为什么是单线程？原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题 好了，接下来我们开始讲Event loop 简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种Task）队列中。一旦执行栈为空，Event Loop就会从Task队列中拿出需要执行的代码并放入执行栈中执行，所以本质上来说，js中的异步行为还是同步的。 我们看下以下代码，以下代码输出’1’, ‘3’, ‘2’12345678console.log('1');setTimeout(()=&gt;&#123; console.log('2');&#125;, 0);console.log('3');//'1'//'3'//'2' 之前对setTimeout理解有偏差，虽然设置了为0，其实还是异步，是因为html5标准规定这个函数的第二个参数不得小于4ms，不足会自动增加。 Task队列分为两种 微任务microtask，es6中称为jobs。以下这些行为属于微任务 process.nextTick promise Object.observe MutationObserver 宏任务macrotask，es6中称为task。以下这些行为属于宏任务 script setTimeout setInterval setImmediate I/O UI rendering 误区：很多人认为微任务快于宏任务，其实是错误的。因为宏任务汇中包括了script，浏览器会先执行一个宏任务，接下来有异步代码的话就先执行微任务。 正确的一次Event loop顺序应该是这样的： 执行同步代码（这属于宏任务） 执行栈为空，查询是否有微任务需要执行 执行所有微任务 必要的话渲染UI 开始下一轮Event loop，执行宏任务中的异步代码 通过上述的Event loop顺序可知，如果宏任务中的异步代码有大量的计算并且需要操作DOM的话，为了更快的界面响应，我们可以把操作DOM放入微任务中。]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+        <tag>基础知识</tag>
+        <tag>计算机通识</tag>
+        <tag>浏览器</tag>
+        <tag>Event loop</tag>
+      </tags>
+  </entry>
+</search>
