@@ -8,9 +8,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>React</tag>
         <tag>diff算法</tag>
+        <tag>学习笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -21,10 +21,10 @@
         <category>学习笔记</category>
       </categories>
       <tags>
+        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
         <tag>浏览器</tag>
-        <tag>学习笔记</tag>
         <tag>Event loop</tag>
       </tags>
   </entry>
