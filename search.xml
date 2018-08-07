@@ -10,8 +10,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>学习笔记</tag>
         <tag>网络</tag>
+        <tag>学习笔记</tag>
         <tag>HTTP</tag>
         <tag>HTTPS</tag>
         <tag>HTTP 2.0</tag>
@@ -28,8 +28,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>学习笔记</tag>
         <tag>网络</tag>
+        <tag>学习笔记</tag>
         <tag>TCP</tag>
         <tag>UDP</tag>
       </tags>
@@ -57,8 +57,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>浏览器</tag>
         <tag>学习笔记</tag>
+        <tag>浏览器</tag>
         <tag>Event loop</tag>
       </tags>
   </entry>
