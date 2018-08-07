@@ -114,18 +114,18 @@
 
 
 
-  <meta name="description" content="在讲Event loop之前，我们先思考一个问题 js为什么是单线程？原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题 好了，接下来我们开始讲Event loop  简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种T">
-<meta name="keywords" content="基础知识,计算机通识,浏览器,学习笔记,Event loop">
+  <meta name="description" content="UDP面向报文UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。 具体来说  在发送端，应用层将数据传递给传输层的UDP协议，UDP只会给数据增加一个UDP头标识下是UDP协议，然后就传递给网络层了 在接收端，网络层将数据传递给传输层，UDP只去除IP报文头就传递给应用层，不会任何拼接操作  不可靠性 UDP是无连接的，也就">
+<meta name="keywords" content="基础知识,计算机通识,学习笔记,网络,TCP">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【基础篇】浏览器中的Event Loop">
-<meta property="og:url" content="http://1eeing.github.io/2018/08/05/eventLoop/index.html">
+<meta property="og:title" content="学习笔记之——UDP和TCP">
+<meta property="og:url" content="http://1eeing.github.io/2018/08/07/学习笔记之——UDP和TCP/index.html">
 <meta property="og:site_name" content="leeing的登山之旅">
-<meta property="og:description" content="在讲Event loop之前，我们先思考一个问题 js为什么是单线程？原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题 好了，接下来我们开始讲Event loop  简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种T">
+<meta property="og:description" content="UDP面向报文UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。 具体来说  在发送端，应用层将数据传递给传输层的UDP协议，UDP只会给数据增加一个UDP头标识下是UDP协议，然后就传递给网络层了 在接收端，网络层将数据传递给传输层，UDP只去除IP报文头就传递给应用层，不会任何拼接操作  不可靠性 UDP是无连接的，也就">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-05T07:23:21.000Z">
+<meta property="og:updated_time" content="2018-08-07T05:57:53.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="【基础篇】浏览器中的Event Loop">
-<meta name="twitter:description" content="在讲Event loop之前，我们先思考一个问题 js为什么是单线程？原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题 好了，接下来我们开始讲Event loop  简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种T">
+<meta name="twitter:title" content="学习笔记之——UDP和TCP">
+<meta name="twitter:description" content="UDP面向报文UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。 具体来说  在发送端，应用层将数据传递给传输层的UDP协议，UDP只会给数据增加一个UDP头标识下是UDP协议，然后就传递给网络层了 在接收端，网络层将数据传递给传输层，UDP只去除IP报文头就传递给应用层，不会任何拼接操作  不可靠性 UDP是无连接的，也就">
 
 
 
@@ -134,7 +134,7 @@
 
 
 
-  <link rel="canonical" href="http://1eeing.github.io/2018/08/05/eventLoop/"/>
+  <link rel="canonical" href="http://1eeing.github.io/2018/08/07/学习笔记之——UDP和TCP/"/>
 
 
 
@@ -144,7 +144,7 @@
   };
 </script>
 
-  <title>【基础篇】浏览器中的Event Loop | leeing的登山之旅</title>
+  <title>学习笔记之——UDP和TCP | leeing的登山之旅</title>
   
 
 
@@ -335,7 +335,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2018/08/05/eventLoop/">
+    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2018/08/07/学习笔记之——UDP和TCP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="leeing">
@@ -352,7 +352,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">【基础篇】浏览器中的Event Loop
+          <h1 class="post-title" itemprop="name headline">学习笔记之——UDP和TCP
               
             
           </h1>
@@ -377,7 +377,7 @@
                 
               
 
-              <time title="创建时间：2018-08-05 02:17:41 / 修改时间：15:23:21" itemprop="dateCreated datePublished" datetime="2018-08-05T02:17:41+08:00">2018-08-05</time>
+              <time title="创建时间：2018-08-07 13:55:12 / 修改时间：13:57:53" itemprop="dateCreated datePublished" datetime="2018-08-07T13:55:12+08:00">2018-08-07</time>
             
 
             
@@ -433,47 +433,135 @@
       
 
       
-        <p>在讲Event loop之前，我们先思考一个问题</p>
-<h2 id="js为什么是单线程？"><a href="#js为什么是单线程？" class="headerlink" title="js为什么是单线程？"></a>js为什么是单线程？</h2><p>原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题</p>
-<p>好了，接下来我们开始讲Event loop</p>
-<blockquote>
-<p>简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种Task）队列中。一旦执行栈为空，Event Loop就会从Task队列中拿出需要执行的代码并放入执行栈中执行，所以本质上来说，js中的异步行为还是同步的。</p>
-</blockquote>
-<a id="more"></a>
-<p>我们看下以下代码，以下代码输出’1’, ‘3’, ‘2’<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'1'</span>);</span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'2'</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'3'</span>);</span><br><span class="line"><span class="comment">//'1'</span></span><br><span class="line"><span class="comment">//'3'</span></span><br><span class="line"><span class="comment">//'2'</span></span><br></pre></td></tr></table></figure></p>
-<p>之前对setTimeout理解有偏差，虽然设置了为0，其实还是异步，是因为html5标准规定这个函数的第二个参数不得小于4ms，不足会自动增加。</p>
-<h2 id="Task队列分为两种"><a href="#Task队列分为两种" class="headerlink" title="Task队列分为两种"></a>Task队列分为两种</h2><ul>
-<li><p>微任务microtask，es6中称为jobs。以下这些行为属于微任务</p>
+        <h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><h3 id="面向报文"><a href="#面向报文" class="headerlink" title="面向报文"></a>面向报文</h3><p>UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。</p>
+<p>具体来说</p>
 <ul>
-<li>process.nextTick</li>
-<li>promise</li>
-<li>Object.observe</li>
-<li>MutationObserver</li>
+<li>在发送端，应用层将数据传递给传输层的UDP协议，UDP只会给数据增加一个UDP头标识下是UDP协议，然后就传递给网络层了</li>
+<li>在接收端，网络层将数据传递给传输层，UDP只去除IP报文头就传递给应用层，不会任何拼接操作</li>
+</ul>
+<h3 id="不可靠性"><a href="#不可靠性" class="headerlink" title="不可靠性"></a>不可靠性</h3><ol>
+<li>UDP是无连接的，也就是说通信不需要建立和断开。</li>
+<li>UDP是不可靠的，协议收到什么数据就传递什么数据，并且也不会备份数据，对方能不能收到也不关心。</li>
+<li>UDP没有拥塞控制，一直会以恒定的速度发送数据。即使网络条件不好，也不会对发送速率进行调整。<ul>
+<li>弊端：在网络条件不好的情况下会导致丢包</li>
+<li>优点：在某些实时性要求高的场景（比如电话会议），就需要使用UDP而不是TCP</li>
 </ul>
 </li>
-<li><p>宏任务macrotask，es6中称为task。以下这些行为属于宏任务</p>
-<ul>
-<li>script</li>
-<li>setTimeout</li>
-<li>setInterval</li>
-<li>setImmediate</li>
-<li>I/O</li>
-<li>UI rendering</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>误区：很多人认为微任务快于宏任务，其实是错误的。因为宏任务汇中包括了script，浏览器会先执行一个宏任务，接下来有异步代码的话就先执行微任务。</p>
-</blockquote>
-<p>正确的一次Event loop顺序应该是这样的：</p>
-<ol>
-<li>执行同步代码（这属于宏任务）</li>
-<li>执行栈为空，查询是否有微任务需要执行</li>
-<li>执行所有微任务</li>
-<li>必要的话渲染UI</li>
-<li>开始下一轮Event loop，执行宏任务中的异步代码</li>
 </ol>
-<p>通过上述的Event loop顺序可知，如果宏任务中的异步代码有大量的计算并且需要操作DOM的话，为了更快的界面响应，我们可以把操作DOM放入微任务中。</p>
+<a id="more"></a>
+<h3 id="高效"><a href="#高效" class="headerlink" title="高效"></a>高效</h3><p>因为UDP没有TCP那么复杂，需要保证数据不丢失且有序到达，所以UDP的头部开销小，只有八字节，相比TCP的至少二十字节要少得多，在传输数据报文时是很高效的。</p>
+<p>头部包含了以下数据</p>
+<ul>
+<li>两个十六位的端口号，分别为源端口（可选字段）和目标端口</li>
+<li>整个数据报文的长度</li>
+<li>整个数据报文的校验和（IPv4可选字段），该字段用于发现头部信息和数据中的错误</li>
+</ul>
+<h3 id="传输方式"><a href="#传输方式" class="headerlink" title="传输方式"></a>传输方式</h3><p>UDP不止支持一对一的传输方式，同样支持一对多，多对多，多对一的方式，也就是说UDP提供了单播、多播、广播的功能。</p>
+<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><h3 id="头部"><a href="#头部" class="headerlink" title="头部"></a>头部</h3><p>TCP头部比UDP复杂的多，对于TCP头部来说，以下几个字段是很重要的</p>
+<ul>
+<li>Sequence number，这个序号保证了TCP传输的报文都是有序的，对端可以通过序号的顺序拼接报文。</li>
+<li>Acknowledgement Number，这个序号表示数据接收端期望接收的下一个字节的编号是多少，同时也表示上一个序号的数据已经收到</li>
+<li>Window Size，窗口大小，表示还能接收多少字节的数据，用于流量控制</li>
+<li>标识符<ul>
+<li>URG=1：该字段为一表示本数据报的数据部分包含紧急信息，是一个高优先级数据报文，此时紧急指针有效。紧急数据一定位于当前数据包数据部分的最前面，紧急指针表明了紧急数据的尾部。</li>
+<li>ACK=1：该字段为一表示确认号字段有效。此外，TCP还规定在连接建立后传送的所有报文段都必须把ACK置为一。</li>
+<li>PSH=1：该字段为一表示接收端应该立即将数据push给应用层，而不是等到缓冲区满后再提交。</li>
+<li>RST=1：该字段为一表示当前TCP连接出现严重问题，可能需要重新建立TCP连接，也可以用于拒绝非法的报文段和拒绝连接请求。</li>
+<li>SYN=1：当SYN=1，ACK=0时，表示当前报文段是一个连接请求报文。当SYN=1，ACK=1时，表示当前报文段是一个同意建立连接的应答报文。</li>
+<li>FIN=1：该字段为一表示此报文段是一个释放连接的请求报文。</li>
+</ul>
+</li>
+</ul>
+<h3 id="状态机"><a href="#状态机" class="headerlink" title="状态机"></a>状态机</h3><p>HTTP是无连接的，所以作为下层的TCP协议也是无连接的，虽然看似TCP将两端连接了起来，但是其实只是两端共同维护了一个状态。</p>
+<p>TCP的状态机是很复杂的，并且与建立断开连接时的握手息息相关，接下来就来详细描述下两种握手。<br>在这之前需要了解一个重要的性能指标RTT，该指标表示发送端发送数据到接收到对端数据所需的往返时间。</p>
+<h3 id="建立连接的三次握手"><a href="#建立连接的三次握手" class="headerlink" title="建立连接的三次握手"></a>建立连接的三次握手</h3><p>在TCP协议中，主动发起请求的一端为客户端，被动连接的一端称为服务端。不管是客户端还是服务端，TCP连接建立完成后都能发送和接收数据，所以TCP也是一个全双工的协议。</p>
+<p>起初，两端都为CLOSED状态。在通信开始前，双方都会创建TCB。服务器创建完TCB后变进入LISTEN状态，此时开始等待客户端发送数据。</p>
+<h4 id="第一次握手（请求连接）"><a href="#第一次握手（请求连接）" class="headerlink" title="第一次握手（请求连接）"></a>第一次握手（请求连接）</h4><p>客户端向服务端发送连接请求报文段。该报文段中包含自身的数据通讯初始序号。请求发送后，客户端便进入SYN-SENT状态，<code>x</code>表示客户端的数据通信初始序号。</p>
+<h4 id="第二次握手（同意连接）"><a href="#第二次握手（同意连接）" class="headerlink" title="第二次握手（同意连接）"></a>第二次握手（同意连接）</h4><p>服务端收到连接请求报文段后，如果同意连接，则会发送一个应答，该应答中也会包含自身的数据通讯出书序号，发送完成后便进入SYN-RECEIVED状态。</p>
+<h4 id="第三次握手（确认应答）"><a href="#第三次握手（确认应答）" class="headerlink" title="第三次握手（确认应答）"></a>第三次握手（确认应答）</h4><p>当客户端收到连接同意的应答后，还要向服务端发送一个确认报文。客户端发完这个报文段后便进入ESTABLISHED状态，服务端收到这个应答后也进入ESTABLISHED状态，此时连接建立成功。</p>
+<blockquote>
+<p>第三次握手可以包含数据，通过TCP快速打开（TFO）技术。其实只要涉及到握手的协议，都可以使用类似TFO的方式，客户端和服务端存储相同cookie，下次握手时发出cookie达到减少RTT的目的。</p>
+</blockquote>
+<h4 id="明明两次握手就可以建立起链接，为什么还需要第三次应答"><a href="#明明两次握手就可以建立起链接，为什么还需要第三次应答" class="headerlink" title="明明两次握手就可以建立起链接，为什么还需要第三次应答"></a>明明两次握手就可以建立起链接，为什么还需要第三次应答</h4><p>这是为了防止失效的连接请求报文段被服务端接收，从而产生错误。</p>
+<p>可以想象如下场景：客户端发送了一个连接请求A，但是因为网络原因造成了超时，这时TCP会启动超时重传的机制，再次发送一个连接请求B。此时请求顺利到达服务端，服务端应答完就建立了请求。如果连接请求A在两端关闭后终于抵达了服务端，那么这时服务端会认为客户端又需要建立TCP连接，从而应答了该请求并进入ESTABLISHED状态。此时客户端其实是CLOSED状态，那么就会导致服务端一直等待，造成资源的浪费。</p>
+<blockquote>
+<p>在建立连接中，任意一端掉线，TCP都会重发SYN包，一般会重试五次，在建立连接中可能会遇到SYN FLOOD攻击。遇到这种情况你可以选择调低重试次数或者干脆在不能处理的情况下拒绝请求。</p>
+</blockquote>
+<h3 id="断开连接的四次握手"><a href="#断开连接的四次握手" class="headerlink" title="断开连接的四次握手"></a>断开连接的四次握手</h3><p>TCP是全双工的，在断开连接时两端都需要发送FIN和ACK。</p>
+<h4 id="第一次握手（请求释放）"><a href="#第一次握手（请求释放）" class="headerlink" title="第一次握手（请求释放）"></a>第一次握手（请求释放）</h4><p>若客户端A认为数据发送完成，则它需要向服务端B发送连接释放请求。</p>
+<h4 id="第二次握手（同意释放）"><a href="#第二次握手（同意释放）" class="headerlink" title="第二次握手（同意释放）"></a>第二次握手（同意释放）</h4><p>B收到连接释放请求后，会告诉应用层要释放TCP连接。然后会发送ACK包，并进入CLOSE_WAIT状态，表示A到B的连接已经释放，不接收A发的数据了。但是因为TCP连接是双向的，所以B仍旧可以发送数据给A。</p>
+<h4 id="第三次握手（继续发没发完的请求）"><a href="#第三次握手（继续发没发完的请求）" class="headerlink" title="第三次握手（继续发没发完的请求）"></a>第三次握手（继续发没发完的请求）</h4><p>B如果此时还有没发完的数据会继续发送，完毕后会向A发送连接释放请求，然后B遍进入LAST-ACK状态</p>
+<blockquote>
+<p>通过延迟确认的技术（通常有时间限制，否则对方会误认为需要重传），可以将第二次和第三次握手合并，延迟ACK包的发送。</p>
+</blockquote>
+<h4 id="第四次握手（确认应答）"><a href="#第四次握手（确认应答）" class="headerlink" title="第四次握手（确认应答）"></a>第四次握手（确认应答）</h4><p>A收到释放请求后，向B发送确认应答，此时A进入TIME-WAIT状态。该状态会持续2MSL（最大段生存期，指报文段在网络中生存的时间，超时会被抛弃）时间，若该时间段内没有B的重发请求的话，就进入CLOSED状态。当B收到确认应答后，也便进入CLOSED状态。</p>
+<h4 id="为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？"><a href="#为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？" class="headerlink" title="为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？"></a>为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？</h4><p>为了保证B能收到A的确认应答。若A发完确认应答后直接进入CLOSED状态，如果确认应答因为网络问题一直没有到达，那么会造成B不能正常关闭。</p>
+<h3 id="ARQ协议"><a href="#ARQ协议" class="headerlink" title="ARQ协议"></a>ARQ协议</h3><p>ARQ协议也就是超时重传机制。通过确认和超时机制保证了数据的正确发送。包含以下两部分</p>
+<ul>
+<li>停止等待ARQ</li>
+<li>连续ARQ</li>
+</ul>
+<h4 id="停止等待ARQ"><a href="#停止等待ARQ" class="headerlink" title="停止等待ARQ"></a>停止等待ARQ</h4><p><strong><em> 正常传输过程 </em></strong><br>只要A向B发送一段报文，都要停止发送并启动一个定时器，等待对端回应，在定时器时间内接收到对端应答就取消定时器并发送下一段报文。</p>
+<p><strong><em> 报文丢失或出错 </em></strong><br>在报文传输的过程中可能会出现丢包。这时候超时定时器设定的时间就会再次发送丢包的数据直到对端响应，所以需要每次都备份发送的数据。</p>
+<p>即使报文正常的传输到对端，也可能出现在传输过程中报文出错的问题。这时候对端会抛弃该报文并等待A端重传。</p>
+<blockquote>
+<p>一般定时器设定的时间都会大于一个RTT的平均时间。</p>
+</blockquote>
+<p><strong><em> ACK超时或丢失 </em></strong><br>对端传输的应答也可能出现丢失或超时的情况。那么超过定时器时间A端照样会重传报文。这时候B端收到相同序号的报文会丢弃该报文并重传应答，直到A端发送下一个序号的报文。</p>
+<p>在超时的情况下也可康出现应答很迟到达，这时A端会判断该序号是否已经接收过，如果接收过只需要丢弃应答即可。</p>
+<blockquote>
+<p>这个协议的缺点就是传输效率低，在良好的网络环境下每次发送报文都得等待对端的ACK。</p>
+</blockquote>
+<h4 id="连续ARQ"><a href="#连续ARQ" class="headerlink" title="连续ARQ"></a>连续ARQ</h4><p>在连续ARQ中，发送端拥有一个发送窗口，可以在没有收到应答的情况下持续发送窗口内的数据，这样相比停止等待ARQ协议来说减少了等待时间，提高了效率。</p>
+<p><strong><em> 累计确认 </em></strong><br>连续ARQ中，接收端会持续不断收到报文。如果和停止等待ARQ中接收一个报文就发送一个应答一样，就太浪费资源了。通过累积确认，可以在收到多个报文后统一回复一个应答报文。报文中的ACK可以用来告诉发送端这个序号之前的数据已经全部接受到了，下次请发送这个序号+1的数据。</p>
+<p>但是累计确认也有一个弊端。<br>在连续接收报文时，可能会遇到接收到序号5的报文后，并未接到序号6的报文，然而序号7以后的报文已经接收。遇到这种情况时，ACK只能回复6，这样会造成发送端重复发送数据，这种情况下可以通过Sack来解决，这个会在下文说到。</p>
+<h3 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h3><p>上面讲到了发送窗口。在TCP中，两端都维护着窗口</p>
+<ul>
+<li>发送端窗口</li>
+<li>接收端窗口</li>
+</ul>
+<p>发送端窗口包含已发送但未收到应答的数据和可以发送但是未发送的数据。<br>发送端窗口是由接收端窗口剩余大小决定的。接收方会把当前接收窗口的剩余大小写入应答报文，发送端收到应答后根据该值和当前网络拥塞情况设置发送端窗口大小，所以发送端窗口大小是不断变化的。</p>
+<p>当发送端接收到应答报文后，会随之将窗口进行滑动</p>
+<p>滑动窗口实现了流量控制。接收方通过报文告知发送方还可以发送多少数据，从而保证接收方能够来得及接收数据。</p>
+<h4 id="Zero窗口"><a href="#Zero窗口" class="headerlink" title="Zero窗口"></a>Zero窗口</h4><p>在发送报文的过程中，可能会遇到对端出现零窗口的情况。在该情况下，发送端会停止发送数据，并启动persistent timer。该定时器会定时发送请求给对端，让对端告知窗口大小。在重试次数超过一定次数后，可能会中断TCP连接。</p>
+<h3 id="拥塞处理"><a href="#拥塞处理" class="headerlink" title="拥塞处理"></a>拥塞处理</h3><p>拥塞处理和流量控制不同，后者是作用于接收方，保证接收方来得及接受数据。而前者是作用于网络，防止过多的数据拥塞网络，避免出现网络负载过大的情况。</p>
+<p>拥塞处理包括了四个算法，分别为</p>
+<ul>
+<li>慢开始</li>
+<li>拥塞避免</li>
+<li>快速重传</li>
+<li>快速恢复</li>
+</ul>
+<h4 id="慢开始算法"><a href="#慢开始算法" class="headerlink" title="慢开始算法"></a>慢开始算法</h4><p>顾名思义，就是在传输开始时将发送窗口慢慢指数级扩大，从而避免一开始就传输大量数据导致网络拥塞。<br>具体步骤如下</p>
+<ol>
+<li>连接初始设置拥塞窗口（Congestion Window）为1MSS（一个分段的最大数据量）</li>
+<li>每过一个RTT就将窗口大小乘二</li>
+<li>指数级增长肯定不能没有限制的，所以有一个阈值限制，当窗口大小大于阈值时就会启动拥塞避免算法。</li>
+</ol>
+<h4 id="拥塞避免算法"><a href="#拥塞避免算法" class="headerlink" title="拥塞避免算法"></a>拥塞避免算法</h4><p>此算法相对简单点，每过一个RTT窗口大小只加一，这样能够避免指数级增长导致网络拥塞，慢慢将大小调整到最佳值。</p>
+<p>在传输过程中可能出现定时器超时的情况，这时候TCP会认为网络拥塞了，会马上进行以下步骤：</p>
+<ol>
+<li>将阈值设为当前拥塞窗口的一半</li>
+<li>将拥塞窗口设为1MSS</li>
+<li>启动拥塞避免算法</li>
+</ol>
+<h4 id="快速重传"><a href="#快速重传" class="headerlink" title="快速重传"></a>快速重传</h4><p>快速重传一般和快速恢复一起出现。一旦接收端收到的报文出现失序的情况，接收端只会回复最后一个顺序正确的报文序号（没有Sack的情况下）。如果收到三个重复的ACK，无需等待定时器超时再重发而是启动快速重传。具体算法分为两种：</p>
+<p><strong><em> TCP Taho </em></strong></p>
+<ul>
+<li>将阈值设为当前拥塞窗口的一半</li>
+<li>将拥塞窗口设为1MSS</li>
+<li>重新开始慢开始算法</li>
+</ul>
+<p><strong><em> TCP Reno </em></strong></p>
+<ul>
+<li>拥塞窗口减半</li>
+<li>将阈值设为当前拥塞窗口</li>
+<li>进入快恢复阶段（重发对端需要的包，一旦收到一个新的ACK答复就退出该阶段）</li>
+<li>使用拥塞避免算法</li>
+</ul>
+<h4 id="TCP-New-Reno-改进后的快速恢复"><a href="#TCP-New-Reno-改进后的快速恢复" class="headerlink" title="TCP New Reno 改进后的快速恢复"></a>TCP New Reno 改进后的快速恢复</h4><p>TCP New Reno 算法改进了之前 TCP Reno 算法的缺陷。在之前，快恢复中只要收到一个新的ACK包，就会退出快恢复。</p>
+<p>在 TCP New Reno 中，TCP发送方先记下三个重复ACK的分段的最大序号。</p>
+<p>假如我有一个分段数据是1~10这十个序号的报文，其中丢失了序号为3和7的报文，那么该分段的最大序号就是10。发送端只会收到ACK序号为3的应答。这时候重发序号为3的报文，接收方顺利接收并会发送ACK序号为7的应答。这时候TCP知道对端是有多个包未收到，会继续发送序号为7的报文，接收方顺利接收并会发送ACK序号为11的应答，这时发送端认为这个分段接收端已经顺利接收，接下来会退出快速恢复阶段。</p>
 
       
     </div>
@@ -524,7 +612,7 @@
     <strong>本文作者： </strong>leeing</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://1eeing.github.io/2018/08/05/eventLoop/" title="【基础篇】浏览器中的Event Loop">http://1eeing.github.io/2018/08/05/eventLoop/</a>
+    <a href="http://1eeing.github.io/2018/08/07/学习笔记之——UDP和TCP/" title="学习笔记之——UDP和TCP">http://1eeing.github.io/2018/08/07/学习笔记之——UDP和TCP/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
@@ -541,11 +629,11 @@
           
             <a href="/tags/计算机通识/" rel="tag"># 计算机通识</a>
           
-            <a href="/tags/浏览器/" rel="tag"># 浏览器</a>
-          
             <a href="/tags/学习笔记/" rel="tag"># 学习笔记</a>
           
-            <a href="/tags/Event-loop/" rel="tag"># Event loop</a>
+            <a href="/tags/网络/" rel="tag"># 网络</a>
+          
+            <a href="/tags/TCP/" rel="tag"># TCP</a>
           
         </div>
       
@@ -578,15 +666,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2018/08/05/diff/" rel="next" title="【理论篇】分析diff算法">
+                <i class="fa fa-chevron-left"></i> 【理论篇】分析diff算法
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/08/05/diff/" rel="prev" title="【理论篇】分析diff算法">
-                【理论篇】分析diff算法 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -795,7 +883,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#js为什么是单线程？"><span class="nav-number">1.</span> <span class="nav-text">js为什么是单线程？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Task队列分为两种"><span class="nav-number">2.</span> <span class="nav-text">Task队列分为两种</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP"><span class="nav-number">1.</span> <span class="nav-text">UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#面向报文"><span class="nav-number">1.1.</span> <span class="nav-text">面向报文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可靠性"><span class="nav-number">1.2.</span> <span class="nav-text">不可靠性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高效"><span class="nav-number">1.3.</span> <span class="nav-text">高效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传输方式"><span class="nav-number">1.4.</span> <span class="nav-text">传输方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP"><span class="nav-number">2.</span> <span class="nav-text">TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#头部"><span class="nav-number">2.1.</span> <span class="nav-text">头部</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#状态机"><span class="nav-number">2.2.</span> <span class="nav-text">状态机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立连接的三次握手"><span class="nav-number">2.3.</span> <span class="nav-text">建立连接的三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一次握手（请求连接）"><span class="nav-number">2.3.1.</span> <span class="nav-text">第一次握手（请求连接）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二次握手（同意连接）"><span class="nav-number">2.3.2.</span> <span class="nav-text">第二次握手（同意连接）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三次握手（确认应答）"><span class="nav-number">2.3.3.</span> <span class="nav-text">第三次握手（确认应答）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#明明两次握手就可以建立起链接，为什么还需要第三次应答"><span class="nav-number">2.3.4.</span> <span class="nav-text">明明两次握手就可以建立起链接，为什么还需要第三次应答</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#断开连接的四次握手"><span class="nav-number">2.4.</span> <span class="nav-text">断开连接的四次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一次握手（请求释放）"><span class="nav-number">2.4.1.</span> <span class="nav-text">第一次握手（请求释放）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二次握手（同意释放）"><span class="nav-number">2.4.2.</span> <span class="nav-text">第二次握手（同意释放）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三次握手（继续发没发完的请求）"><span class="nav-number">2.4.3.</span> <span class="nav-text">第三次握手（继续发没发完的请求）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四次握手（确认应答）"><span class="nav-number">2.4.4.</span> <span class="nav-text">第四次握手（确认应答）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？"><span class="nav-number">2.4.5.</span> <span class="nav-text">为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ARQ协议"><span class="nav-number">2.5.</span> <span class="nav-text">ARQ协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#停止等待ARQ"><span class="nav-number">2.5.1.</span> <span class="nav-text">停止等待ARQ</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连续ARQ"><span class="nav-number">2.5.2.</span> <span class="nav-text">连续ARQ</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#滑动窗口"><span class="nav-number">2.6.</span> <span class="nav-text">滑动窗口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Zero窗口"><span class="nav-number">2.6.1.</span> <span class="nav-text">Zero窗口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拥塞处理"><span class="nav-number">2.7.</span> <span class="nav-text">拥塞处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#慢开始算法"><span class="nav-number">2.7.1.</span> <span class="nav-text">慢开始算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拥塞避免算法"><span class="nav-number">2.7.2.</span> <span class="nav-text">拥塞避免算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#快速重传"><span class="nav-number">2.7.3.</span> <span class="nav-text">快速重传</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP-New-Reno-改进后的快速恢复"><span class="nav-number">2.7.4.</span> <span class="nav-text">TCP New Reno 改进后的快速恢复</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
