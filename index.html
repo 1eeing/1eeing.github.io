@@ -380,7 +380,7 @@
                 
               
 
-              <time title="创建时间：2018-08-07 13:55:12 / 修改时间：13:57:53" itemprop="dateCreated datePublished" datetime="2018-08-07T13:55:12+08:00">2018-08-07</time>
+              <time title="创建时间：2018-08-07 13:55:12 / 修改时间：14:18:35" itemprop="dateCreated datePublished" datetime="2018-08-07T13:55:12+08:00">2018-08-07</time>
             
 
             
@@ -437,13 +437,13 @@
 
       
         
-          <h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><h3 id="面向报文"><a href="#面向报文" class="headerlink" title="面向报文"></a>面向报文</h3><p>UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。</p>
+          <h1 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h1><h2 id="面向报文"><a href="#面向报文" class="headerlink" title="面向报文"></a>面向报文</h2><p>UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。</p>
 <p>具体来说</p>
 <ul>
 <li>在发送端，应用层将数据传递给传输层的UDP协议，UDP只会给数据增加一个UDP头标识下是UDP协议，然后就传递给网络层了</li>
 <li>在接收端，网络层将数据传递给传输层，UDP只去除IP报文头就传递给应用层，不会任何拼接操作</li>
 </ul>
-<h3 id="不可靠性"><a href="#不可靠性" class="headerlink" title="不可靠性"></a>不可靠性</h3><ol>
+<h2 id="不可靠性"><a href="#不可靠性" class="headerlink" title="不可靠性"></a>不可靠性</h2><ol>
 <li>UDP是无连接的，也就是说通信不需要建立和断开。</li>
 <li>UDP是不可靠的，协议收到什么数据就传递什么数据，并且也不会备份数据，对方能不能收到也不关心。</li>
 <li>UDP没有拥塞控制，一直会以恒定的速度发送数据。即使网络条件不好，也不会对发送速率进行调整。<ul>
