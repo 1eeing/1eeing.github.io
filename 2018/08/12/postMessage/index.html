@@ -114,18 +114,18 @@
 
 
 
-  <meta name="description" content="背景： iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。  如何用postMessage来实现？ postMess">
+  <meta name="description" content="背景： iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。">
 <meta name="keywords" content="基础知识,计算机通识,postMessage,massageChannel,个人原创">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从iframe高度自适应了解postMessage">
 <meta property="og:url" content="http://1eeing.github.io/2018/08/12/postMessage/index.html">
 <meta property="og:site_name" content="leeing的登山之旅">
-<meta property="og:description" content="背景： iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。  如何用postMessage来实现？ postMess">
+<meta property="og:description" content="背景： iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-12T12:36:55.693Z">
+<meta property="og:updated_time" content="2018-08-12T12:40:17.211Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从iframe高度自适应了解postMessage">
-<meta name="twitter:description" content="背景： iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。  如何用postMessage来实现？ postMess">
+<meta name="twitter:description" content="背景： iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。">
 
 
 
@@ -387,7 +387,7 @@
                 
               
 
-              <time title="创建时间：2018-08-12 20:33:35 / 修改时间：20:36:55" itemprop="dateCreated datePublished" datetime="2018-08-12T20:33:35+08:00">2018-08-12</time>
+              <time title="创建时间：2018-08-12 20:33:35 / 修改时间：20:40:17" itemprop="dateCreated datePublished" datetime="2018-08-12T20:33:35+08:00">2018-08-12</time>
             
 
             
@@ -474,6 +474,7 @@
         <h3 id="背景："><a href="#背景：" class="headerlink" title="背景："></a>背景：</h3><blockquote>
 <p>iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。</p>
 </blockquote>
+<a id="more"></a>
 <h2 id="如何用postMessage来实现？"><a href="#如何用postMessage来实现？" class="headerlink" title="如何用postMessage来实现？"></a>如何用postMessage来实现？</h2><blockquote>
 <p>postMessage的实现类似sub、pub，首先需要在父页面绑定一个接收事件，接收来自子页面的message事件，一般会用origin来判断是否来自期望的子页面。</p>
 </blockquote>

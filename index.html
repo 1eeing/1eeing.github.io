@@ -390,7 +390,7 @@
                 
               
 
-              <time title="创建时间：2018-08-12 20:33:35 / 修改时间：20:36:55" itemprop="dateCreated datePublished" datetime="2018-08-12T20:33:35+08:00">2018-08-12</time>
+              <time title="创建时间：2018-08-12 20:33:35 / 修改时间：20:40:17" itemprop="dateCreated datePublished" datetime="2018-08-12T20:33:35+08:00">2018-08-12</time>
             
 
             
@@ -475,39 +475,16 @@
 
       
         
-          
-            <h3 id="背景："><a href="#背景：" class="headerlink" title="背景："></a>背景：</h3><blockquote>
+          <h3 id="背景："><a href="#背景：" class="headerlink" title="背景："></a>背景：</h3><blockquote>
 <p>iframe在我们的项目里用的比较多，也是为了复用一些代码，在这样的情况下，iframe的高度自然而然就成了一个大问题，不合适的iframe高度会使页面出现2个及以上的滚动条，这对用户体验及美观（前端的强迫症）来说都是比较痛苦的。因此我们需要让iframe的高度达到一个合适的高度，从而达到除了外部的滚动条外，不产生多余的其他滚动条。</p>
 </blockquote>
-<h2 id="如何用postMessage来实现？"><a href="#如何用postMessage来实现？" class="headerlink" title="如何用postMessage来实现？"></a>如何用postMessage来实现？</h2><blockquote>
-<p>postMessage的实现类似sub、pub，首先需要在父页面绑定一个接收事件，接收来自子页面的message事件，一般会用origin来判断是否来自期望的子页面。</p>
-</blockquote>
-<h3 id="父页面接收消息"><a href="#父页面接收消息" class="headerlink" title="父页面接收消息"></a>父页面接收消息</h3><p>父页面伪代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">window.addEventListener(&apos;message&apos;, function(e)&#123;</span><br><span class="line">  /*</span><br><span class="line">   *  e里面会有一些参数，我们用到以下两个</span><br><span class="line">   *  e.origin 来源</span><br><span class="line">   *  e.data 参数</span><br><span class="line">   */</span><br><span class="line"></span><br><span class="line">  //判断origin是否来自xxx，是则将data传递过去</span><br><span class="line">  if(e.origin == &apos;xxx&apos;)&#123;</span><br><span class="line">      callback(e.data);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">function callback(data) &#123;</span><br><span class="line">  //判断事件名，执行相应的操作</span><br><span class="line">  if(data.eventName == &apos;changeHeight&apos;)&#123;</span><br><span class="line">      changeHeight(data.height);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function changeHeight(height) &#123;</span><br><span class="line">  var selector = &apos;xxx&apos;;</span><br><span class="line">  selector.height = height;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="子页面发送消息"><a href="#子页面发送消息" class="headerlink" title="子页面发送消息"></a>子页面发送消息</h3><blockquote>
-<p>otherWindow.postMessage(data, targetOrigin, [transfer]);</p>
-</blockquote>
-<ol>
-<li><p>otherWindow 其他窗口的一个引用，比如iframe的contentWindow属性、执行window.open返回的窗口对象、或者是命名过或数值索引的window.frames。</p>
-</li>
-<li><p>data 将要发送到其他 window的数据。它将会被结构化克隆算法序列化。这意味着你可以不受什么限制的将数据对象安全的传送给目标窗口而无需自己序列化。</p>
-</li>
-<li><p>targetOrigin 通过窗口的origin属性来指定哪些窗口能接收到消息事件，其值可以是字符串”“（表示无限制）或者一个URI。在发送消息的时候，如果目标窗口的协议、主机地址或端口这三者的任意一项不匹配targetOrigin提供的值，那么消息就不会被发送；只有三者完全匹配，消息才会被发送。这个机制用来控制消息可以发送到哪些窗口；例如，当用postMessage传送密码时，这个参数就显得尤为重要，必须保证它的值与这条包含密码的信息的预期接受者的orign属性完全一致，来防止密码被恶意的第三方截获。如果你明确的知道消息应该发送到哪个窗口，那么请始终提供一个有确切值的targetOrigin，而不是。不提供确切的目标将导致数据泄露到任何对数据感兴趣的恶意站点。</p>
-</li>
-<li><p>transfer 是一串和message 同时传递的 Transferable 对象. 这些对象的所有权将被转移给消息的接收方，而发送一方将不再保有所有权。</p>
-</li>
-</ol>
-<p>子页面伪代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var data = &#123;</span><br><span class="line">  eventName: &apos;changeHeight&apos;,</span><br><span class="line">  height: $(&apos;body&apos;).height()</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var targetOrigin = &apos;https://p1.kuaidizs.com&apos;;</span><br><span class="line">window.postMessage(data, targetOrigin);</span><br></pre></td></tr></table></figure>
-<p>以上，我们就完成了使用postMessage来改变父页面的高度。</p>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
-<li><p>使用message来接收消息时，为了安全起见，请对origin进行判断，防止不期望的页面发起攻击</p>
-</li>
-<li><p>使用message来发送事件时，请明确targetOrigin，防止第三方截获你发送的数据</p>
-</li>
-</ul>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/12/postMessage/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
