@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://1eeing.github.io/"/>
-  <updated>2018-08-18T14:11:14.603Z</updated>
+  <updated>2018-08-18T16:52:45.893Z</updated>
   <id>http://1eeing.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>【浏览器篇】浏览器的缓存策略</title>
+    <link href="http://1eeing.github.io/2018/08/19/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5/"/>
+    <id>http://1eeing.github.io/2018/08/19/浏览器的缓存策略/</id>
+    <published>2018-08-18T16:49:14.743Z</published>
+    <updated>2018-08-18T16:52:45.893Z</updated>
+    
+    <content type="html"><![CDATA[<p>通常浏览器缓存策略分为两种</p><ul><li>强缓存<br>实现强缓存可以通过两种响应头实现，表示在缓存期间不需要请求，state code为200<ul><li>Expires：HTTP/1.0的产物，表示在XX时间后过期，受限于本地时间</li><li>Cache-Control：HTTP/1.1，优先级高于Expires，值为max-age=xx，表示xx秒后过期</li></ul></li></ul><a id="more"></a><ul><li><p>协商缓存</p><ul><li><p>Last-Modified和If-Modified-Since：Last-Modified表示本地文件最后修改日期，If-Modified-Since会将   Last-Modified的值发送给服务器，询问服务器在该日期后资源是否有更新，有更新的话就会将新的资源发送   回来。但是如果在本地打开缓存文件，就会造成Last-Modified被修改，所以在HTTP/1.1中出现了ETag。</p></li><li><p>ETag和If-None-Match：Etag类似于文件指纹，If-None-Match会将当前Etag发送给服务器，询问该资源ETag   是否有变动，有的话则将新的资源发送回来。优先级比Last-Modified高。</p></li></ul></li></ul><p>对于大部分的场景都可以使用强缓存配合协商缓存解决，但是在一些特殊的地方可能需要选择特殊的缓存策略</p><ul><li>对于某些不需要缓存的资源，可以使用Cache-Control: no-store</li><li>对于频繁变动的资源，可以使用Cache-Control配合ETag使用</li><li>对于代码文件来说，可以使用Cache-Control: max-age=3153600，并配合缓存策略使用，然后对文件进行指纹吹，一旦文件名变动就会下载新的文件</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;通常浏览器缓存策略分为两种&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;强缓存&lt;br&gt;实现强缓存可以通过两种响应头实现，表示在缓存期间不需要请求，state code为200&lt;ul&gt;
+&lt;li&gt;Expires：HTTP/1.0的产物，表示在XX时间后过期，受限于本地时间&lt;/li&gt;
+&lt;li&gt;Cache-Control：HTTP/1.1，优先级高于Expires，值为max-age=xx，表示xx秒后过期&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+      <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+      <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="浏览器" scheme="http://1eeing.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+      <category term="缓存策略" scheme="http://1eeing.github.io/tags/%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5/"/>
+    
+  </entry>
   
   <entry>
     <title>【算法篇】排序与链表</title>

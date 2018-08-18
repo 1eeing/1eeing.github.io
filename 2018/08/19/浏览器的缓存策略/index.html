@@ -114,16 +114,18 @@
 
 
 
-  <meta name="description" content="如果困难出现，就要战斗到底。如果训练有素，你就会生还，否则，大自然将把你收为己有。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="leeing的登山之旅">
-<meta property="og:url" content="http://1eeing.github.io/tags/HTTP/index.html">
+  <meta name="description" content="通常浏览器缓存策略分为两种  强缓存实现强缓存可以通过两种响应头实现，表示在缓存期间不需要请求，state code为200 Expires：HTTP/1.0的产物，表示在XX时间后过期，受限于本地时间 Cache-Control：HTTP/1.1，优先级高于Expires，值为max-age=xx，表示xx秒后过期">
+<meta name="keywords" content="学习笔记,基础知识,计算机通识,浏览器,缓存策略">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【浏览器篇】浏览器的缓存策略">
+<meta property="og:url" content="http://1eeing.github.io/2018/08/19/浏览器的缓存策略/index.html">
 <meta property="og:site_name" content="leeing的登山之旅">
-<meta property="og:description" content="如果困难出现，就要战斗到底。如果训练有素，你就会生还，否则，大自然将把你收为己有。">
+<meta property="og:description" content="通常浏览器缓存策略分为两种  强缓存实现强缓存可以通过两种响应头实现，表示在缓存期间不需要请求，state code为200 Expires：HTTP/1.0的产物，表示在XX时间后过期，受限于本地时间 Cache-Control：HTTP/1.1，优先级高于Expires，值为max-age=xx，表示xx秒后过期">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-18T16:52:45.893Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="leeing的登山之旅">
-<meta name="twitter:description" content="如果困难出现，就要战斗到底。如果训练有素，你就会生还，否则，大自然将把你收为己有。">
+<meta name="twitter:title" content="【浏览器篇】浏览器的缓存策略">
+<meta name="twitter:description" content="通常浏览器缓存策略分为两种  强缓存实现强缓存可以通过两种响应头实现，表示在缓存期间不需要请求，state code为200 Expires：HTTP/1.0的产物，表示在XX时间后过期，受限于本地时间 Cache-Control：HTTP/1.1，优先级高于Expires，值为max-age=xx，表示xx秒后过期">
 
 
 
@@ -132,7 +134,7 @@
 
 
 
-  <link rel="canonical" href="http://1eeing.github.io/tags/HTTP/"/>
+  <link rel="canonical" href="http://1eeing.github.io/2018/08/19/浏览器的缓存策略/"/>
 
 
 
@@ -142,7 +144,7 @@
   };
 </script>
 
-  <title>标签: HTTP | leeing的登山之旅</title>
+  <title>【浏览器篇】浏览器的缓存策略 | leeing的登山之旅</title>
   
 
 
@@ -199,7 +201,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -280,22 +282,6 @@
   
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
   
 
   
@@ -343,58 +329,310 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>HTTP<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
+
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2018/08/19/浏览器的缓存策略/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="leeing">
+      <meta itemprop="description" content="如果困难出现，就要战斗到底。如果训练有素，你就会生还，否则，大自然将把你收为己有。">
+      <meta itemprop="image" content="/images/WechatIMG1.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeing的登山之旅">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/08/07/HTTP/" itemprop="url">
-              
-                <span itemprop="name">【网络篇】Http、Https、Http 2.0 及 DNS</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">【浏览器篇】浏览器的缓存策略
+              
+            
+          </h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-08-07T18:22:08+08:00"
-              content="2018-08-07" >
-          08-07
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
 
-    </header>
-  </article>
+            
+            
+            
 
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-19 00:49:14 / 修改时间：00:52:45" itemprop="dateCreated datePublished" datetime="2018-08-19T00:49:14+08:00">2018-08-19</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习笔记/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">692</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">1 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>通常浏览器缓存策略分为两种</p>
+<ul>
+<li>强缓存<br>实现强缓存可以通过两种响应头实现，表示在缓存期间不需要请求，state code为200<ul>
+<li>Expires：HTTP/1.0的产物，表示在XX时间后过期，受限于本地时间</li>
+<li>Cache-Control：HTTP/1.1，优先级高于Expires，值为max-age=xx，表示xx秒后过期</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li><p>协商缓存</p>
+<ul>
+<li><p>Last-Modified和If-Modified-Since：Last-Modified表示本地文件最后修改日期，If-Modified-Since会将   Last-Modified的值发送给服务器，询问服务器在该日期后资源是否有更新，有更新的话就会将新的资源发送   回来。但是如果在本地打开缓存文件，就会造成Last-Modified被修改，所以在HTTP/1.1中出现了ETag。</p>
+</li>
+<li><p>ETag和If-None-Match：Etag类似于文件指纹，If-None-Match会将当前Etag发送给服务器，询问该资源ETag   是否有变动，有的话则将新的资源发送回来。优先级比Last-Modified高。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>对于大部分的场景都可以使用强缓存配合协商缓存解决，但是在一些特殊的地方可能需要选择特殊的缓存策略</p>
+<ul>
+<li>对于某些不需要缓存的资源，可以使用Cache-Control: no-store</li>
+<li>对于频繁变动的资源，可以使用Cache-Control配合ETag使用</li>
+<li>对于代码文件来说，可以使用Cache-Control: max-age=3153600，并配合缓存策略使用，然后对文件进行指纹吹，一旦文件名变动就会下载新的文件</li>
+</ul>
 
       
     </div>
 
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxPay.jpeg" alt="leeing 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/aliPay.jpeg" alt="leeing 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>leeing</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://1eeing.github.io/2018/08/19/浏览器的缓存策略/" title="【浏览器篇】浏览器的缓存策略">http://1eeing.github.io/2018/08/19/浏览器的缓存策略/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/学习笔记/" rel="tag"># 学习笔记</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/计算机通识/" rel="tag"># 计算机通识</a>
+          
+            <a href="/tags/浏览器/" rel="tag"># 浏览器</a>
+          
+            <a href="/tags/缓存策略/" rel="tag"># 缓存策略</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+               <div id="needsharebutton-postbottom">
+                 <span class="btn">
+                    <i class="fa fa-share-alt" aria-hidden="true"></i>
+                 </span>
+               </div>
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/18/排序和链表/" rel="next" title="【算法篇】排序与链表">
+                <i class="fa fa-chevron-left"></i> 【算法篇】排序与链表
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -750,6 +988,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
 
   
 
