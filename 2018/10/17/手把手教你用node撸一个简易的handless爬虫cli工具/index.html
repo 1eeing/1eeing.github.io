@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="众所周知，node功能很强大，为前端提供了更多的可能。今天，就跟大家分享一下我是如何用node写一个handless爬虫的">
+<meta name="keywords" content="node,cli,commander,inquirer,puppeteer,爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手把手教你用node撸一个简易的handless爬虫cli工具">
+<meta property="og:url" content="http://1eeing.github.io/2018/10/17/手把手教你用node撸一个简易的handless爬虫cli工具/index.html">
+<meta property="og:site_name" content="leeing的登山之旅">
+<meta property="og:description" content="众所周知，node功能很强大，为前端提供了更多的可能。今天，就跟大家分享一下我是如何用node写一个handless爬虫的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img.alicdn.com/imgextra/i3/69942425/O1CN011TmgvWMBA2SfqY6_!!69942425.jpg">
+<meta property="og:updated_time" content="2018-10-17T12:04:25.714Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手把手教你用node撸一个简易的handless爬虫cli工具">
+<meta name="twitter:description" content="众所周知，node功能很强大，为前端提供了更多的可能。今天，就跟大家分享一下我是如何用node写一个handless爬虫的">
+<meta name="twitter:image" content="https://img.alicdn.com/imgextra/i3/69942425/O1CN011TmgvWMBA2SfqY6_!!69942425.jpg">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="leeing的登山之旅" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="http://1eeing.github.io/2018/10/17/手把手教你用node撸一个简易的handless爬虫cli工具/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>手把手教你用node撸一个简易的handless爬虫cli工具 | leeing的登山之旅</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8c9920db8cd644822ea0127b44f556f6";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div style="width:298px;height:52px;position:absolute;right:0;top:0">
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=567688849&auto=0&height=32"></iframe>
+      </div>
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">leeing的登山之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">前往空气稀薄地带</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2018/10/17/手把手教你用node撸一个简易的handless爬虫cli工具/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="leeing">
+      <meta itemprop="description" content="如果困难出现，就要战斗到底。如果训练有素，你就会生还，否则，大自然将把你收为己有。">
+      <meta itemprop="image" content="/images/WechatIMG1.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeing的登山之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">手把手教你用node撸一个简易的handless爬虫cli工具
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-17 20:02:57 / 修改时间：20:04:25" itemprop="dateCreated datePublished" datetime="2018-10-17T20:02:57+08:00">2018-10-17</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/个人原创/" itemprop="url" rel="index"><span itemprop="name">个人原创</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">9.2k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">8 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://img.alicdn.com/imgextra/i3/69942425/O1CN011TmgvWMBA2SfqY6_!!69942425.jpg" alt="https://img.alicdn.com/imgextra/i3/69942425/O1CN011TmgvWMBA2SfqY6_!!69942425.jpg"></p>
+<blockquote>
+<p>众所周知，node功能很强大，为前端提供了更多的可能。今天，就跟大家分享一下我是如何用node写一个handless爬虫的</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="用到的工具"><a href="#用到的工具" class="headerlink" title="用到的工具"></a>用到的工具</h1><ul>
+<li>puppeteer</li>
+<li>commander</li>
+<li>inquirer</li>
+<li>chalk</li>
+</ul>
+<p>下面就给大家讲一下这些工具都有什么作用</p>
+<h2 id="puppeteer"><a href="#puppeteer" class="headerlink" title="puppeteer"></a>puppeteer</h2><p>handless爬虫主要靠它。它可以模拟用户打开网页的过程，但是并没有打开网页。写过自动化测试的同学应该对这个会比较熟悉，因为用它爬虫的过程跟自动化测试的过程几乎是一样的。</p>
+<h2 id="commander"><a href="#commander" class="headerlink" title="commander"></a>commander</h2><p>基于node的cli命令行工具。利用它，我们可以很方便的写出各种各样的cli命令。</p>
+<h2 id="inquirer"><a href="#inquirer" class="headerlink" title="inquirer"></a>inquirer</h2><p>交互式命令行工具。什么叫做交互式命令行呢？其实就是类似npm init的时候，问一个问题，我们答一个问题，最后根据答案生成package.json的过程。</p>
+<h2 id="chalk"><a href="#chalk" class="headerlink" title="chalk"></a>chalk</h2><p>这个其实就是一个让我们在命令行中输出的文字更加优美的工具。</p>
+<p>好了，介绍完了工具以后，让我们正式开始我们的项目。</p>
+<h1 id="项目介绍"><a href="#项目介绍" class="headerlink" title="项目介绍"></a>项目介绍</h1><p>首先，要搞清楚我们想要实现的功能。我们想要实现的功能就是，在<strong>命令行</strong>中输入我们想要下载的图片，然后node去网上爬取我们想要的图片（这里就先去百度图片爬吧），直接下载到本地。以及输入一个命令，可以清空我们输出目录中的图片。</p>
+<h1 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">|-- Documents</span><br><span class="line">    |-- .gitignore</span><br><span class="line">    |-- README.md</span><br><span class="line">    |-- package.json</span><br><span class="line">    |-- bin</span><br><span class="line">    |   |-- gp</span><br><span class="line">    |-- output</span><br><span class="line">    |   |-- .gitkeeper</span><br><span class="line">    |-- src</span><br><span class="line">        |-- app.js</span><br><span class="line">        |-- clean.js</span><br><span class="line">        |-- index.js</span><br><span class="line">        |-- config</span><br><span class="line">        |   |-- default.js</span><br><span class="line">        |-- helper</span><br><span class="line">            |-- questions.js</span><br><span class="line">            |-- regMap.js</span><br><span class="line">            |-- srcToImg.js</span><br></pre></td></tr></table></figure>
+<p>以上是项目用到的一个简单的目录结构</p>
+<ul>
+<li><strong>output</strong> 用以存放下载的图片</li>
+<li><strong>bin</strong> cli工具会用到的文件</li>
+<li><strong>src</strong> 代码主要存放于此<ul>
+<li><strong>index.js</strong> 项目入口文件</li>
+<li><strong>app.js</strong> 主要功能文件</li>
+<li><strong>clean.js</strong> 用于清空图片操作的文件</li>
+<li><strong>config</strong> 用于存放一些配置</li>
+<li><strong>helper</strong> 用于存放一些辅助方法的文件</li>
+</ul>
+</li>
+</ul>
+<h1 id="开始项目"><a href="#开始项目" class="headerlink" title="开始项目"></a>开始项目</h1><p><strong>首先我们看一下app.js。</strong></p>
+<p>我们用一个类包裹核心方法，是为了命令行工具可以更方便的调用我们的方法。</p>
+<p>这个类很简单，<code>constructor</code>接收参数，<code>start</code>开启主要流程。<br><code>start</code>方法是一个async函数，因为<code>puppeteer</code>操作浏览器的过程几乎都是异步的。</p>
+<p>接着我们用<code>puppeteer</code>生成page的实例，利用<code>goto</code>方法模拟进入百度图片页面。这时其实就是跟我们真实打开浏览器进入百度图片是一样的，只不过因为我们是handless的，所以我们无法感知打开浏览器的过程。</p>
+<p>然后我们需要设置一下浏览器的宽度（想象一下），不能太大，也不能太小。太大会触发百度反爬虫机制，导致我们爬下来的图片是403或者别的错误。太小会导致爬到的图片非常少。</p>
+<p>接下去我们聚焦搜索框，输入我们想要搜索的关键字（这个关键字呢就是我们在命令行输入的关键字），然后点击搜索。</p>
+<p>等页面加载以后，我们用<code>page.$$eval</code>获取页面上所有<code>class</code>为<code>.main_img</code>的图片（具体规律需要自己去观察），再获取上面的<code>src</code>属性后，将<code>src</code>转为我们本地的图片。</p>
+<p>到这里，app.js的任务就完成了。<br>很简单吧。</p>
+<p>下面是代码。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> puppeteer = <span class="built_in">require</span>(<span class="string">'puppeteer'</span>);</span><br><span class="line"><span class="keyword">const</span> chalk = <span class="built_in">require</span>(<span class="string">'chalk'</span>);</span><br><span class="line"><span class="keyword">const</span> config = <span class="built_in">require</span>(<span class="string">'./config/default'</span>);</span><br><span class="line"><span class="keyword">const</span> srcToImg = <span class="built_in">require</span>(<span class="string">'./helper/srcToImg'</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(conf) &#123;</span><br><span class="line">        <span class="comment">//有传入的参数既用传入的参数，没有既用默认的参数</span></span><br><span class="line">        <span class="keyword">this</span>.conf = <span class="built_in">Object</span>.assign(&#123;&#125;, config, conf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> start () &#123;</span><br><span class="line">        <span class="comment">//用puppeteer生成一个browser的实例</span></span><br><span class="line">        <span class="comment">//用browser再生成一个page的实例</span></span><br><span class="line">        <span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.launch();</span><br><span class="line">        <span class="keyword">const</span> page = <span class="keyword">await</span> browser.newPage();</span><br><span class="line">    </span><br><span class="line">        <span class="comment">//打开搜索引擎，先写死百度</span></span><br><span class="line">        <span class="keyword">await</span> page.goto(<span class="keyword">this</span>.conf.searchPath);</span><br><span class="line">        <span class="built_in">console</span>.log(chalk.green(<span class="string">`go to <span class="subst">$&#123;<span class="keyword">this</span>.conf.searchPath&#125;</span>`</span>));</span><br><span class="line">    </span><br><span class="line">        <span class="comment">//设置窗口大小，过大会引起反爬虫</span></span><br><span class="line">        <span class="keyword">await</span> page.setViewport(&#123;</span><br><span class="line">            width: <span class="number">1920</span>,</span><br><span class="line">            height: <span class="number">700</span></span><br><span class="line">        &#125;);</span><br><span class="line">    </span><br><span class="line">        <span class="comment">//搜索文字输入框聚焦</span></span><br><span class="line">        <span class="keyword">await</span> page.focus(<span class="string">'#kw'</span>);</span><br><span class="line">    </span><br><span class="line">        <span class="comment">//输入要搜索的关键字</span></span><br><span class="line">        <span class="keyword">await</span> page.keyboard.sendCharacter(<span class="keyword">this</span>.conf.keyword);</span><br><span class="line">    </span><br><span class="line">        <span class="comment">//点击搜索</span></span><br><span class="line">        <span class="keyword">await</span> page.click(<span class="string">'.s_search'</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(chalk.green(<span class="string">`get start searching pictures`</span>));</span><br><span class="line">    </span><br><span class="line">        <span class="comment">//页面加载后要做的事</span></span><br><span class="line">        page.on(<span class="string">'load'</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(chalk.green(<span class="string">`searching pictures done, start fetch...`</span>));</span><br><span class="line">            <span class="comment">//获取所有指定图片的src</span></span><br><span class="line">            <span class="keyword">const</span> srcs = <span class="keyword">await</span> page.$$<span class="built_in">eval</span>(<span class="string">'img.main_img'</span>, pictures =&gt; &#123;</span><br><span class="line">                <span class="keyword">return</span> pictures.map(<span class="function"><span class="params">img</span> =&gt;</span> img.src);</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="built_in">console</span>.log(chalk.green(<span class="string">`get <span class="subst">$&#123;srcs.length&#125;</span> pictures, start download`</span>));</span><br><span class="line">    </span><br><span class="line">            srcs.forEach(<span class="keyword">async</span> (src) =&gt; &#123;</span><br><span class="line">                <span class="keyword">await</span> page.waitFor(<span class="number">200</span>);</span><br><span class="line">                <span class="keyword">await</span> srcToImg(src, <span class="keyword">this</span>.conf.outputPath);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = App;</span><br></pre></td></tr></table></figure></p>
+<p><strong>接下来我们看一下，如何把图片的src属性转化为我们本地的图片呢？我们看下helper下的srcToImg.js</strong></p>
+<p>首先，这个模块主要引入了node的<code>http</code>模块、<code>https</code>模块、<code>path</code>模块和<code>fs</code>模块及一些辅助工具，比如正则、将回调函数转化为promise的<code>promisify</code>和将输出更好看的<code>chalk</code>。</p>
+<p>为什么我们要同时引入http和https模块呢？仔细观察百度图片搜索结果中的图片，我们可以发现，既有http的也有https的，所以我们引入两个模块，区分出具体的图片属于哪个就用哪个模块去请求图片。请求了图片以后，我们就用<code>fs</code>模块的<code>createWriteStream</code>方法，将图片存入我们的<code>output</code>目录中。</p>
+<p>如果我们仔细观察了百度搜索结果中的图片的src，我们会发现，除了http和https开头的图片，还有base64的图片，所以我们要对base64的图片也做一下处理。</p>
+<p>跟普通图片一样的处理，先根据<code>src</code>分割出扩展名，再计算出存储的路径和文件名，最后写入调用<code>fs</code>模块的<code>writeFile</code>方法写入文件（这里就简单的用writeFile了）。</p>
+<p>以上，图片就存入本地了。</p>
+<p>代码如下。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">const</span> https = <span class="built_in">require</span>(<span class="string">'https'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; promisify &#125; = <span class="built_in">require</span>(<span class="string">'util'</span>);</span><br><span class="line"><span class="keyword">const</span> chalk = <span class="built_in">require</span>(<span class="string">'chalk'</span>);</span><br><span class="line"><span class="keyword">const</span> writeFile = promisify(fs.writeFile);</span><br><span class="line"><span class="keyword">const</span> regMap = <span class="built_in">require</span>(<span class="string">'./regMap'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> urlToImg = promisify(<span class="function">(<span class="params">url, dir</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> mod;</span><br><span class="line">    <span class="keyword">if</span>(regMap.isHttp.test(url))&#123;</span><br><span class="line">        mod = http;</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(regMap.isHttps.test(url))&#123;</span><br><span class="line">        mod = https;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取图片的扩展名</span></span><br><span class="line">    <span class="keyword">const</span> ext = path.extname(url);</span><br><span class="line">    <span class="comment">//拼接图片存储的路径和扩展名</span></span><br><span class="line">    <span class="keyword">const</span> file = path.join(dir, <span class="string">`<span class="subst">$&#123;<span class="built_in">parseInt</span>(<span class="built_in">Math</span>.random() * <span class="number">1000000</span>)&#125;</span><span class="subst">$&#123;ext&#125;</span>`</span>);</span><br><span class="line"></span><br><span class="line">    mod.get(url, res =&gt; &#123;</span><br><span class="line">        <span class="comment">//采用stream的形式，比直接写入更快捷</span></span><br><span class="line">        res.pipe(fs.createWriteStream(file)).on(<span class="string">'finish'</span>, () =&gt; &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(file);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> base64ToImg = <span class="keyword">async</span> (base64Str, dir) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> matchs = base64Str.match(regMap.isBase64);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> ext = matchs[<span class="number">1</span>].split(<span class="string">'/'</span>)[<span class="number">1</span>].replace(<span class="string">'jpeg'</span>, <span class="string">'jpg'</span>);</span><br><span class="line">        <span class="keyword">const</span> file = path.join(dir, <span class="string">`<span class="subst">$&#123;<span class="built_in">parseInt</span>(<span class="built_in">Math</span>.random() * <span class="number">1000000</span>)&#125;</span>.<span class="subst">$&#123;ext&#125;</span>`</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">await</span> writeFile(file, matchs[<span class="number">2</span>], <span class="string">'base64'</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(file);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(chalk.red(<span class="string">'无法识别的图片'</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function">(<span class="params">src, dir</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span>(regMap.isPic.test(src))&#123;</span><br><span class="line">        urlToImg(src, dir);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        base64ToImg(src, dir);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p><strong>我们再看一下如何清空output下的图片呢？</strong><br>这里我们还是用到了<code>node</code>的<code>fs</code>模块，首先利用<code>fs.readdir</code>方法读取<code>output</code>文件夹，然后遍历其下的文件，如果是图片，则调用<code>fs.unlink</code>方法删除它。也很简单，对吧。</p>
+<p>代码如下<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> regMap = <span class="built_in">require</span>(<span class="string">'./helper/regMap'</span>);</span><br><span class="line"><span class="keyword">const</span> config = <span class="built_in">require</span>(<span class="string">'./config/default'</span>);</span><br><span class="line"><span class="keyword">const</span> cleanPath = config.outputPath;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Clean</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    clean() &#123;</span><br><span class="line">        fs.readdir(cleanPath, (err, files) =&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span>(err)&#123;</span><br><span class="line">                <span class="keyword">throw</span> err;</span><br><span class="line">            &#125;</span><br><span class="line">            files.forEach(<span class="function"><span class="params">file</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(regMap.isPic.test(file))&#123;</span><br><span class="line">                    <span class="keyword">const</span> img = <span class="string">`<span class="subst">$&#123;cleanPath&#125;</span>/<span class="subst">$&#123;file&#125;</span>`</span>;</span><br><span class="line">                    fs.unlink(img, (e) =&gt; &#123;</span><br><span class="line">                        <span class="keyword">if</span>(e) &#123;</span><br><span class="line">                            <span class="keyword">throw</span> e;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'clean finished'</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = Clean;</span><br></pre></td></tr></table></figure></p>
+<p><strong>最后我们看一下如何写cli工具呢？</strong><br>首先我们需要在<code>bin</code>目录下新建一个脚本文件<code>gp</code>，如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#! /usr/bin/env node</span><br><span class="line">module.exports = require(&apos;../src/index&apos;);</span><br></pre></td></tr></table></figure></p>
+<p>意思是找到<code>/usr/bin/env</code>下的<code>node</code>来启动第二行的代码</p>
+<p>其次我们需要在package.json里加入一个<code>bin</code>对象，对象下属性名是我们命令的名字，属性是<code>bin</code>下的脚本文件的路径，如下<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"bin"</span>: &#123;</span><br><span class="line">  <span class="string">"gp"</span>: <span class="string">"bin/gp"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接着我们来看下<code>index.js</code><br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> program = <span class="built_in">require</span>(<span class="string">'commander'</span>);</span><br><span class="line"><span class="keyword">const</span> inquirer = <span class="built_in">require</span>(<span class="string">'inquirer'</span>);</span><br><span class="line"><span class="keyword">const</span> pkg = <span class="built_in">require</span>(<span class="string">'../package.json'</span>);</span><br><span class="line"><span class="keyword">const</span> qs = <span class="built_in">require</span>(<span class="string">'./helper/questions'</span>);</span><br><span class="line"><span class="keyword">const</span> App = <span class="built_in">require</span>(<span class="string">'./app'</span>);</span><br><span class="line"><span class="keyword">const</span> Clean = <span class="built_in">require</span>(<span class="string">'./clean'</span>);</span><br><span class="line"></span><br><span class="line">program</span><br><span class="line">    .version(pkg.version, <span class="string">'-v, --version'</span>);</span><br><span class="line"></span><br><span class="line">program</span><br><span class="line">    .command(<span class="string">'search'</span>)</span><br><span class="line">    .alias(<span class="string">'s'</span>)</span><br><span class="line">    .description(<span class="string">'get search pictures what you want.'</span>)</span><br><span class="line">    .action(<span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">        <span class="keyword">const</span> answers = <span class="keyword">await</span> inquirer.prompt(qs.startQuestions);</span><br><span class="line">        <span class="keyword">const</span> app = <span class="keyword">new</span> App(answers);</span><br><span class="line">        <span class="keyword">await</span> app.start();</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">program</span><br><span class="line">    .command(<span class="string">'clean'</span>)</span><br><span class="line">    .alias(<span class="string">'c'</span>)</span><br><span class="line">    .description(<span class="string">'clean all pictures in directory "output".'</span>)</span><br><span class="line">    .action(<span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">        <span class="keyword">const</span> answers = <span class="keyword">await</span> inquirer.prompt(qs.confirmClean);</span><br><span class="line">        <span class="keyword">const</span> clean = <span class="keyword">new</span> Clean();</span><br><span class="line">        answers.isRemove &amp;&amp; <span class="keyword">await</span> clean.clean();</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">program.parse(process.argv);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(process.argv.length &lt; <span class="number">3</span>)&#123;</span><br><span class="line">    program.help();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们引入<code>commander</code>和<code>inquirer</code>，<code>program.command</code>方法是为我们生成命令名的，<code>alias</code>是该命令的缩写，<code>description</code>是该命令的描述，<code>action</code>是该命令要做的事情。</p>
+<p>我们首先用<code>command</code>生成了两个命令，<code>search</code>和<code>clean</code>，接着可以看到，我们在<code>action</code>中用了<code>inquirer</code>，<code>inquirer</code>的提问是一个异步的过程，所以我们也一样用了<code>async</code>和<code>await</code>，<code>inquirer</code>接收一个问题数组，里面包含问题的type、name、message和验证方法等，具体的可以参考inquirer的文档。我们这里的问题如下，这里返回了两个数组，一个是用于输入关键字的时候的，一个是用于清空图片时确认的。提问数组中会验证是否有填写关键字，如果没有，则不会继续下一步并提示你该输入关键字，否则就正式开始爬虫流程。删除确认数组就是简单的一个确认，如果确认了，则开始删除图片。最后，用<code>program.parse</code>将命令注入到<code>node</code>的<code>process.argv</code>中，根据命令行有没有输入参数提示help信息。</p>
+<p>至此，我们的程序大功告成。接下去我们只要将我们的程序发布到npm里，就可以让其他人下载来使用了~npm的发布我们这里就不再赘述啦，不清楚的同学网上随便搜一下就ok啦。</p>
+<p><code>src/helper/questions.js</code>如下<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> config = <span class="built_in">require</span>(<span class="string">'../config/default'</span>);</span><br><span class="line"></span><br><span class="line">exports.startQuestions = [</span><br><span class="line">    &#123;</span><br><span class="line">        type: <span class="string">'input'</span>,</span><br><span class="line">        name: <span class="string">'keyword'</span>,</span><br><span class="line">        message: <span class="string">'What pictures do yo want to get ?'</span>,</span><br><span class="line">        validate: <span class="function"><span class="keyword">function</span>(<span class="params">keyword</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">const</span> done = <span class="keyword">this</span>.async();</span><br><span class="line">            <span class="keyword">if</span>(keyword === <span class="string">''</span>)&#123;</span><br><span class="line">                done(<span class="string">'Please enter the keyword to get pictures'</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            done(<span class="literal">null</span>, <span class="literal">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">exports.confirmClean = [</span><br><span class="line">    &#123;</span><br><span class="line">        type: <span class="string">'confirm'</span>,</span><br><span class="line">        name: <span class="string">'isRemove'</span>,</span><br><span class="line">        message: <span class="string">`Do you want to remove all pictures in <span class="subst">$&#123;config.outputPath&#125;</span> ?`</span>,</span><br><span class="line">        <span class="keyword">default</span>: <span class="literal">true</span>,</span><br><span class="line">    &#125;</span><br><span class="line">];</span><br></pre></td></tr></table></figure></p>
+<h1 id="项目下载"><a href="#项目下载" class="headerlink" title="项目下载"></a>项目下载</h1><p><code>npm i get_picture -g</code></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li>该项目的git链接 <a href="https://github.com/1eeing/get_picture" target="_blank" rel="noopener">https://github.com/1eeing/get_picture</a></li>
+<li>puppeteer git链接 <a href="https://github.com/GoogleChrome/puppeteer" target="_blank" rel="noopener">https://github.com/GoogleChrome/puppeteer</a></li>
+<li>commander git链接 <a href="https://github.com/tj/commander.js" target="_blank" rel="noopener">https://github.com/tj/commander.js</a></li>
+<li>inquirer git链接 <a href="https://github.com/SBoudrias/Inquirer.js" target="_blank" rel="noopener">https://github.com/SBoudrias/Inquirer.js</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxPay.jpeg" alt="leeing 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/aliPay.jpeg" alt="leeing 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>leeing</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://1eeing.github.io/2018/10/17/手把手教你用node撸一个简易的handless爬虫cli工具/" title="手把手教你用node撸一个简易的handless爬虫cli工具">http://1eeing.github.io/2018/10/17/手把手教你用node撸一个简易的handless爬虫cli工具/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/node/" rel="tag"># node</a>
+          
+            <a href="/tags/cli/" rel="tag"># cli</a>
+          
+            <a href="/tags/commander/" rel="tag"># commander</a>
+          
+            <a href="/tags/inquirer/" rel="tag"># inquirer</a>
+          
+            <a href="/tags/puppeteer/" rel="tag"># puppeteer</a>
+          
+            <a href="/tags/爬虫/" rel="tag"># 爬虫</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+               <div id="needsharebutton-postbottom">
+                 <span class="btn">
+                    <i class="fa fa-share-alt" aria-hidden="true"></i>
+                 </span>
+               </div>
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/13/Nginx/" rel="next" title="彻底搞懂Nginx">
+                <i class="fa fa-chevron-left"></i> 彻底搞懂Nginx
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/WechatIMG1.jpeg"
+                alt="leeing" />
+            
+              <p class="site-author-name" itemprop="name">leeing</p>
+              <p class="site-description motion-element" itemprop="description">如果困难出现，就要战斗到底。如果训练有素，你就会生还，否则，大自然将把你收为己有。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/1eeing" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5b63b739f265da0f8d367c92" target="_blank" title="掘金"><i class="fa fa-fw fa-globe"></i>掘金</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/lee1ng/activities" target="_blank" title="知乎"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://segmentfault.com/u/leeing" target="_blank" title="SF"><i class="fa fa-fw fa-globe"></i>SF</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://blog.guowenfh.com/" title="三省吾身丶丶" target="_blank">三省吾身丶丶</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://iwuly.com/" title="积叶草堂" target="_blank">积叶草堂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://indexof.site/" title="indexOf" target="_blank">indexOf</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#用到的工具"><span class="nav-number">1.</span> <span class="nav-text">用到的工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#puppeteer"><span class="nav-number">1.1.</span> <span class="nav-text">puppeteer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#commander"><span class="nav-number">1.2.</span> <span class="nav-text">commander</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inquirer"><span class="nav-number">1.3.</span> <span class="nav-text">inquirer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chalk"><span class="nav-number">1.4.</span> <span class="nav-text">chalk</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目介绍"><span class="nav-number">2.</span> <span class="nav-text">项目介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件目录"><span class="nav-number">3.</span> <span class="nav-text">文件目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开始项目"><span class="nav-number">4.</span> <span class="nav-text">开始项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目下载"><span class="nav-number">5.</span> <span class="nav-text">项目下载</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">leeing</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">63k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">57 分钟</span>
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Muse</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazyload/1.9.3/jquery.lazyload.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="https://cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+    
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
