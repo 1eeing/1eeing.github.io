@@ -123,7 +123,7 @@
 <meta property="og:description" content="上篇文章中我们提到了用node撸一个简易的爬虫，本次基于上一篇文章中的项目get_picture给大家分享下我是如何用node撸一个图片压缩工具的。  历史：《手把手教你用node撸一个简易的headless爬虫cli工具》">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://tinypng.com/images/social/developer-api.jpg">
-<meta property="og:updated_time" content="2018-10-26T17:26:33.923Z">
+<meta property="og:updated_time" content="2018-10-26T17:34:30.703Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="手把手教你用node撸一个图片压缩工具">
 <meta name="twitter:description" content="上篇文章中我们提到了用node撸一个简易的爬虫，本次基于上一篇文章中的项目get_picture给大家分享下我是如何用node撸一个图片压缩工具的。  历史：《手把手教你用node撸一个简易的headless爬虫cli工具》">
@@ -389,7 +389,7 @@
                 
               
 
-              <time title="创建时间：2018-10-27 01:22:20 / 修改时间：01:26:33" itemprop="dateCreated datePublished" datetime="2018-10-27T01:22:20+08:00">2018-10-27</time>
+              <time title="创建时间：2018-10-27 01:22:20 / 修改时间：01:34:30" itemprop="dateCreated datePublished" datetime="2018-10-27T01:22:20+08:00">2018-10-27</time>
             
 
             
@@ -487,7 +487,7 @@
 <li>/src/imgMin.js。即我们的主文件。</li>
 <li>/src/helper/tinify.js。主要用于操作tinypng的相关API</li>
 </ul>
-<h1 id="主文件"><a href="#主文件" class="headerlink" title="主文件"></a>主文件</h1><p>在主文件中，我们主要用到了<code>node</code>的<code>fs模块</code>。<br>首先我们会判断输入的key是否有效，其次我们会该key剩余可用数是不是小于0，如果没问题的话，我们就开始查找检索路径下的所有文件。</p>
+<h1 id="主文件"><a href="#主文件" class="headerlink" title="主文件"></a>主文件</h1><p>在主文件中，我们主要用到了<code>node</code>的<code>fs模块</code>。<br>首先我们会判断输入的key是否有效，其次我们会判断该key剩余可用数是不是小于0，如果没问题的话，我们就开始查找检索路径下的所有文件。</p>
 <p><strong>检索路径</strong><br>首先我们会通过<code>fs.stat</code>判断该路径是否是文件夹，如果是，则通过<code>fs.readdir</code>获取当前文件列表，遍历后然后将其传给获取图片方法。注意这边有个坑点，因为我们的操作几乎都是异步操作，所以我一开始也很理所当然的用了forEach来遍历，伪代码如下<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">files.forEach(<span class="keyword">async</span> (file) =&gt; &#123;</span><br><span class="line">  <span class="keyword">await</span> getImg(file);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
 <p>后来发现，这种写法会导致await并不能如我们预期的阻断来执行，而是变成了一个同步的过程（一开始的预期是一张图片压缩输出完才执行第二张，虽然这样会导致很慢。所以后面还是换成了同步压缩），这是因为<code>forEach</code>可以理解为传入一个function，然后在内部执行循环，在循环中执行function并传回index和item，如果传入的是async函数的话，则其实是并行执行了多个匿名async函数自调，因此await无法按照我们预期的来执行。所以该处我们采用<code>for-of</code>循环，伪代码如下<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> file <span class="keyword">of</span> files)&#123;</span><br><span class="line">  <span class="keyword">await</span> getImg(file);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p><strong>获取图片</strong><br>在获取图片中，我们依然会通过<code>fs.stat</code>来判断，如果当前文件依然是个文件夹，我们则递归调用<code>findImg</code>检索其下的文件，如果是图片，先判断当前累计图片总数有没有超过剩余数的最大值（如果使用异步压缩，则不需要进行这一步，因为每一次图片处理都是等待上一张图片处理完成后再进行处理；如果是同步压缩，则必须要这一步，否则如果压缩过程中超数量了，会导致整批压缩失败），如果没有超过，则通过调用<code>tinify.js</code>中的<code>imgMin</code>方法开始进行压缩。</p>
