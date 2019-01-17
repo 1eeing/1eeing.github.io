@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://1eeing.github.io/"/>
-  <updated>2018-10-26T17:34:30.703Z</updated>
+  <updated>2019-01-17T16:32:46.243Z</updated>
   <id>http://1eeing.github.io/</id>
   
   <author>
@@ -15,6 +15,65 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>深入了解React之Reconciliation</title>
+    <link href="http://1eeing.github.io/2019/01/18/Reconciliation/"/>
+    <id>http://1eeing.github.io/2019/01/18/Reconciliation/</id>
+    <published>2019-01-17T16:31:40.712Z</published>
+    <updated>2019-01-17T16:32:46.243Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>在使用React时，在单个时间点钟，可以将render函数视为创建React元素树。在下一个state或props更新时，render函数将返回一个不同的React元素树。然后，React需要弄清楚如何有效地更新UI以匹配最新的树。</p><p>这个算法问题有一些通用的解决方案，既生成将一棵树转换成另一棵树的最小操作次数。然而，现有技术的算法具有O(n^3)的复杂度，其中n是书中元素的数量。简单来说，对比两棵树需要的时间复杂度是O(n^2)，操作一棵树（移动、创建、删除）时需要遍历一次树，因此时间复杂度是O(n^3)。</p><p>如果在React中使用它，显示1000个元素将需要10亿次对比。这消耗太大了。<br>因此，React基于两个假设实现了一个启发式O(n)算法：</p><a id="more"></a><ol><li>不同类型的两个元素将产生不同的树</li><li>可以通过key来指定哪些子元素可以在不同渲染中保持稳定</li></ol><h1 id="diff算法"><a href="#diff算法" class="headerlink" title="diff算法"></a>diff算法</h1><p>在区分两棵树时，React首先会比较两个根元素。根据根元素的类型，行为会有所不同。</p><h2 id="不同类型的元素"><a href="#不同类型的元素" class="headerlink" title="不同类型的元素"></a>不同类型的元素</h2><p>每当根元素具有不同的类型时，React将拆除旧树并从头开始构建新树。从<code>&lt;a&gt;</code>到<code>&lt;img&gt;</code>，或从<code>&lt;Article&gt;</code>到<code>&lt;Comment&gt;</code>，都将导致完全重建。</p><p>在拆除树时，旧dom节点将被销毁。组件实例接收componentWillUnMount()。<br>构建新树时，会将新dom节点插入到dom中。组件实例接收componentWillMount()，然后接收componentDidMount()。与旧树相关联的任何状态都将丢失。</p><p>root下面的任何组件也将被卸载并且其状态被破坏。例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;div&gt;</span><br><span class="line">  &lt;Counter /&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">&lt;span&gt;</span><br><span class="line">  &lt;Counter /&gt;</span><br><span class="line">&lt;/span&gt;</span><br></pre></td></tr></table></figure></p><p>这会导致旧的<code>&lt;Counter&gt;</code>被破坏，并新建一个。</p><h2 id="相同类型的dom元素"><a href="#相同类型的dom元素" class="headerlink" title="相同类型的dom元素"></a>相同类型的dom元素</h2><p>当比较两个相同类型的React DOM元素时，React查看两者的属性，保持相同的底层dom节点，并仅更新更改的属性。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;div className=&quot;before&quot; title=&quot;stuff&quot; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;div className=&quot;after&quot; title=&quot;stuff&quot; /&gt;</span><br></pre></td></tr></table></figure></p><p>通过比较这两个元素，React知道只修改底层dom节点上的className。</p><p>更新样式时，React也知道只更新已更改的属性。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;div style=&#123;&#123;color: &apos;red&apos;, fontWeight: &apos;bold&apos;&#125;&#125; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;div style=&#123;&#123;color: &apos;green&apos;, fontWeight: &apos;bold&apos;&#125;&#125; /&gt;</span><br></pre></td></tr></table></figure></p><p>在这两个元素之间进行转换时，React知道只修改颜色样式，而不是fontWeight。<br>在处理dom节点之后，React对子节点进行递归。</p><h2 id="相同类型的组件元素"><a href="#相同类型的组件元素" class="headerlink" title="相同类型的组件元素"></a>相同类型的组件元素</h2><p>当组件更新时，实例保持不变，以便在渲染之间保持状态。React更新底层组件实例的props以匹配新元素，并在底层实例上调用componentWillReceiveProps()和componentWillUpdate()。</p><p>接下来，调用render()方法，diff算法开始递归计算前一个结果和新结果</p><h1 id="子节点的递归"><a href="#子节点的递归" class="headerlink" title="子节点的递归"></a>子节点的递归</h1><p>默认情况下，当对dom节点的子节点进行递归时，React会同时迭代两个子节点列表，并在出现差异时生成突变。</p><p>例如，在子节点末尾添加元素时，在两个树之间进行转换效果很好<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;ul&gt;</span><br><span class="line">  &lt;li&gt;first&lt;/li&gt;</span><br><span class="line">  &lt;li&gt;second&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br><span class="line"></span><br><span class="line">&lt;ul&gt;</span><br><span class="line">  &lt;li&gt;first&lt;/li&gt;</span><br><span class="line">  &lt;li&gt;second&lt;/li&gt;</span><br><span class="line">  &lt;li&gt;third&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure></p><p>React将对比两个<code>&lt;li&gt;first&lt;/li&gt;</code>和两个<code>&lt;li&gt;second&lt;/li&gt;</code>，然后插入<code>&lt;li&gt;third&lt;/li&gt;</code>。</p><p>如果你在开头插入一个元素，那会有糟糕的表现。例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;ul&gt;</span><br><span class="line">  &lt;li&gt;Duke&lt;/li&gt;</span><br><span class="line">  &lt;li&gt;Villanova&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br><span class="line"></span><br><span class="line">&lt;ul&gt;</span><br><span class="line">  &lt;li&gt;Connecticut&lt;/li&gt;</span><br><span class="line">  &lt;li&gt;Duke&lt;/li&gt;</span><br><span class="line">  &lt;li&gt;Villanova&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure></p><p>React将改变每个children，而不是意识到它可以保持<code>&lt;li&gt;Duke&lt;/li&gt;</code>和<code>&lt;li&gt;Villanova&lt;/li&gt;</code>不变。这种低效率可能是一个问题。</p><h1 id="keys"><a href="#keys" class="headerlink" title="keys"></a>keys</h1><p>为了解决这个问题，React支持一个key属性。当children有key时，React使用key来匹配旧树和新树中的children。例如，在上面的低效示例中添加一个key可以使树转换有效：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;ul&gt;</span><br><span class="line">  &lt;li key=&quot;2015&quot;&gt;Duke&lt;/li&gt;</span><br><span class="line">  &lt;li key=&quot;2016&quot;&gt;Villanova&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br><span class="line"></span><br><span class="line">&lt;ul&gt;</span><br><span class="line">  &lt;li key=&quot;2014&quot;&gt;Connecticut&lt;/li&gt;</span><br><span class="line">  &lt;li key=&quot;2015&quot;&gt;Duke&lt;/li&gt;</span><br><span class="line">  &lt;li key=&quot;2016&quot;&gt;Villanova&lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure></p><p>现在React知道具有key2014的元素时新元素，并且2015和2016元素刚刚移动。</p><p>在实践中，找到key通常不难。它可能来自你的数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;li key=&#123;item.id&#125;&gt;&#123;item.name&#125;&lt;/li&gt;</span><br></pre></td></tr></table></figure></p><p>如果不是这种情况，你可以向模型添加新的id属性，或者对内容的某些部分进行hash编码以生存密钥。关键只需要在其兄弟姐妹中独一无二，而不是全树独一无二。</p><p>实在不行，可以将数组中的项目索引作为key。如果项目从不重新排序，这可以很好的工作，但重新排序将很慢。</p><p>当索引用作key时，重新排序也会导致组件状态出现问题。组件实例根据key进行更新和重用。如果key是索引，则移动项目会更改它。因此，诸如非受控组件的状态可能会以意想不到的方式混淆和更新。</p><h1 id="权衡"><a href="#权衡" class="headerlink" title="权衡"></a>权衡</h1><p>牢记协调算法的实现细节非常重要。React可以在每个动作上重新呈现整个应用程序，而最终结果是一样的。为了清楚可见，在这种情况下重新渲染意味着为所有组件调用渲染，但这并不意味着React将卸载并重新安装它们。它只会按照前面章节中规定的规则应用差异。</p><p>在当前的实现中，可以表明一个事实，即子树在其兄弟节点中移动，但你无法告知其移动到哪。该算法会重新渲染整个子树。</p><p>因为React依赖于启发式方法，如果不满足它们背后的假设，性能将受到影响。</p><ol><li>该算法不会尝试匹配不同组件类型的子树。如果你发现自己在具有非常相似输出的两种组件类型之间交替，则可能需要使其成为相同类型。</li><li>key应该是稳定的，可预测的和独特的。不稳定的key将导致许多组件实例和dom节点被不必要地重建，这可能导致性能下降和并丢失子组件的状态。</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;动机&quot;&gt;&lt;a href=&quot;#动机&quot; class=&quot;headerlink&quot; title=&quot;动机&quot;&gt;&lt;/a&gt;动机&lt;/h1&gt;&lt;p&gt;在使用React时，在单个时间点钟，可以将render函数视为创建React元素树。在下一个state或props更新时，render函数将返回一个不同的React元素树。然后，React需要弄清楚如何有效地更新UI以匹配最新的树。&lt;/p&gt;
+&lt;p&gt;这个算法问题有一些通用的解决方案，既生成将一棵树转换成另一棵树的最小操作次数。然而，现有技术的算法具有O(n^3)的复杂度，其中n是书中元素的数量。简单来说，对比两棵树需要的时间复杂度是O(n^2)，操作一棵树（移动、创建、删除）时需要遍历一次树，因此时间复杂度是O(n^3)。&lt;/p&gt;
+&lt;p&gt;如果在React中使用它，显示1000个元素将需要10亿次对比。这消耗太大了。&lt;br&gt;因此，React基于两个假设实现了一个启发式O(n)算法：&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="深入学习" scheme="http://1eeing.github.io/categories/%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="深入学习" scheme="http://1eeing.github.io/tags/%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="React" scheme="http://1eeing.github.io/tags/React/"/>
+    
+      <category term="Reconciliation" scheme="http://1eeing.github.io/tags/Reconciliation/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入了解React之Fiber</title>
+    <link href="http://1eeing.github.io/2019/01/18/Fiber/"/>
+    <id>http://1eeing.github.io/2019/01/18/Fiber/</id>
+    <published>2019-01-17T16:29:57.000Z</published>
+    <updated>2019-01-17T16:31:26.816Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>React 16种加入的新的react核心算法。也可理解为虚拟堆栈帧。</p><h1 id="Fiber的驱动理念"><a href="#Fiber的驱动理念" class="headerlink" title="Fiber的驱动理念"></a>Fiber的驱动理念</h1><ol><li>在UI中，不必立即应用每个更新，这样做可能会浪费，导致丢帧并降低用户体验</li><li>不同类型的更新具有不同的优先级，动画更新需要比数据存储更新更快地完成</li><li>基于推送的方法需要开发者决定如何安排工作，基于拉取的方法允许框架变得聪明并为你做出决策</li></ol><a id="more"></a><h1 id="什么是fiber（重要）"><a href="#什么是fiber（重要）" class="headerlink" title="什么是fiber（重要）"></a>什么是fiber（重要）</h1><p>使React能够实现调度（scheduling），具体如下</p><ol><li>暂停工作，稍后再回来</li><li>为不同类型的工作分配优先权</li><li>重用以前完成的工作</li><li>如果不再需要，则中止工作</li></ol><p>为了做到这一点，我们首先需要一种将工作分解为单元的方法，这种方法，就可以称之为Fiber。<br>在处理UI时，问题在于如果同时执行太多工作，则可能导致动画丢帧并且看起来不稳定。更重要的是，如果它被更新的更新取代，那么其中一些工作可能不是必要的。这是ui组件和funtion之间的差异，因为组件比一般的功能有更多特定的关注点。</p><p>有2个api实现了有助于解决这个问题的api</p><ul><li>requestIdleCallback，调度在空闲期间调用的低优先级函数</li><li>requestAnimationFrame，调度在下一个动画帧上调用的高优先级函数</li></ul><p>所以，为了使用这些API，需要一种方法将渲染工作分解为增量单元。如果仅依赖于调用堆栈，它将持续工作直到堆栈为空。</p><p>如果我们可以自定义调用堆栈的行为以优化渲染UI，随意终端调用堆栈并手动操作对战阵，那不是很好吗？这就是React Fiber的目的。</p><p>Fiber是堆栈的重新实现，专门用于React组件，可以将单根fiber视为虚拟堆栈帧。<br>重新实现堆栈的优点是，你可以将堆栈帧保留在内存中，然后想执行的时候就执行它们。这对于实现我们的调度目标至关重要。除了调度之外，手动处理堆栈帧还可以释放并发和错误边界等功能。</p><h1 id="fiber的结构"><a href="#fiber的结构" class="headerlink" title="fiber的结构"></a>fiber的结构</h1><p>fiber是一个javascript对象，里面包含有这些属性</p><h2 id="type和key"><a href="#type和key" class="headerlink" title="type和key"></a>type和key</h2><p>从ReactElements复制过来，用途也一样</p><h2 id="child和sibling"><a href="#child和sibling" class="headerlink" title="child和sibling"></a>child和sibling</h2><p>指向其他的fiber，描述fiber的递归树结构</p><h2 id="return"><a href="#return" class="headerlink" title="return"></a>return</h2><p>返回父fiber</p><h2 id="pendingProps和memoizedProps"><a href="#pendingProps和memoizedProps" class="headerlink" title="pendingProps和memoizedProps"></a>pendingProps和memoizedProps</h2><p>是一个function的参数。在执行开始前，设置pendingProps，在结束时设置memoizedProps。当传入的pendingProps和memoizedProps相等时，表示fiber先前的输出可以重复使用，从而防止不必要的工作。</p><h2 id="pendingWorkPriority"><a href="#pendingWorkPriority" class="headerlink" title="pendingWorkPriority"></a>pendingWorkPriority</h2><p>一个代表fiber工作优先级的数字</p><h2 id="alternate"><a href="#alternate" class="headerlink" title="alternate"></a>alternate</h2><p><strong><em>flush</em></strong><br>将fiber呈现在屏幕上</p><p><strong><em>work-in-process</em></strong><br>未完成的fiber。</p><p>当前fiber的备用是work-in-process<br>work-in-process的替代是当前fiber<br>使用cloneFiber函数创建fiber，而不是总是创建一个新对象，cloneFiber将尝试重用Fiber的备用，如果它存在，最小化分配（最新代码库中没有找到）</p><h2 id="output"><a href="#output" class="headerlink" title="output"></a>output</h2><p>告诉渲染器需要更改的部分</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h1&gt;&lt;p&gt;React 16种加入的新的react核心算法。也可理解为虚拟堆栈帧。&lt;/p&gt;
+&lt;h1 id=&quot;Fiber的驱动理念&quot;&gt;&lt;a href=&quot;#Fiber的驱动理念&quot; class=&quot;headerlink&quot; title=&quot;Fiber的驱动理念&quot;&gt;&lt;/a&gt;Fiber的驱动理念&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;在UI中，不必立即应用每个更新，这样做可能会浪费，导致丢帧并降低用户体验&lt;/li&gt;
+&lt;li&gt;不同类型的更新具有不同的优先级，动画更新需要比数据存储更新更快地完成&lt;/li&gt;
+&lt;li&gt;基于推送的方法需要开发者决定如何安排工作，基于拉取的方法允许框架变得聪明并为你做出决策&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="深入学习" scheme="http://1eeing.github.io/categories/%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="深入学习" scheme="http://1eeing.github.io/tags/%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="React" scheme="http://1eeing.github.io/tags/React/"/>
+    
+      <category term="Fiber" scheme="http://1eeing.github.io/tags/Fiber/"/>
+    
+  </entry>
   
   <entry>
     <title>手把手教你用node撸一个图片压缩工具</title>
