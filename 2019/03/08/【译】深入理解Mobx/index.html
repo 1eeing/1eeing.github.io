@@ -114,18 +114,24 @@
 
 
 
-  <meta name="description" content="diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。  传统的diff算法diff算法，即微分算法。">
-<meta name="keywords" content="React,diff算法,学习笔记">
+  <meta name="description" content="首先，先让我们看一下Mobx的核心概念。  可观察状态(Observable state)。任何可以变异且可以作为计算值源的值都是state。Mobx可以开箱即用地使绝大多数类型的值（基本类型，数组，类，对象）变成可观察的（甚至深度观察）。  计算值(Computed values)。任何可观察的值可以使用纯函数计算得出任何值。计算值的范围可以从简单的字符串到复杂的对象甚至dom操作上。计算值会">
+<meta name="keywords" content="Mobx">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【React篇】分析diff算法">
-<meta property="og:url" content="http://1eeing.github.io/2018/08/07/ReactDiff/index.html">
+<meta property="og:title" content="【译】深入理解Mobx">
+<meta property="og:url" content="http://1eeing.github.io/2019/03/08/【译】深入理解Mobx/index.html">
 <meta property="og:site_name" content="leeing的登山之旅">
-<meta property="og:description" content="diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。  传统的diff算法diff算法，即微分算法。">
+<meta property="og:description" content="首先，先让我们看一下Mobx的核心概念。  可观察状态(Observable state)。任何可以变异且可以作为计算值源的值都是state。Mobx可以开箱即用地使绝大多数类型的值（基本类型，数组，类，对象）变成可观察的（甚至深度观察）。  计算值(Computed values)。任何可观察的值可以使用纯函数计算得出任何值。计算值的范围可以从简单的字符串到复杂的对象甚至dom操作上。计算值会">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-07T10:14:33.000Z">
+<meta property="og:image" content="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&fm=26&gp=0.jpg">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*SXiDJ_mQ0ctEj2QEurLpqA.png">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/800/1*Pb3Wd14BlXPgqylBN_y-hQ.png">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/800/1*Et95GdR7OeOofl_V0Od4iA.png">
+<meta property="og:updated_time" content="2019-03-07T17:52:05.554Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="【React篇】分析diff算法">
-<meta name="twitter:description" content="diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。  传统的diff算法diff算法，即微分算法。">
+<meta name="twitter:title" content="【译】深入理解Mobx">
+<meta name="twitter:description" content="首先，先让我们看一下Mobx的核心概念。  可观察状态(Observable state)。任何可以变异且可以作为计算值源的值都是state。Mobx可以开箱即用地使绝大多数类型的值（基本类型，数组，类，对象）变成可观察的（甚至深度观察）。  计算值(Computed values)。任何可观察的值可以使用纯函数计算得出任何值。计算值的范围可以从简单的字符串到复杂的对象甚至dom操作上。计算值会">
+<meta name="twitter:image" content="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&fm=26&gp=0.jpg">
 
 
 
@@ -134,7 +140,7 @@
 
 
 
-  <link rel="canonical" href="http://1eeing.github.io/2018/08/07/ReactDiff/"/>
+  <link rel="canonical" href="http://1eeing.github.io/2019/03/08/【译】深入理解Mobx/"/>
 
 
 
@@ -144,7 +150,7 @@
   };
 </script>
 
-  <title>【React篇】分析diff算法 | leeing的登山之旅</title>
+  <title>【译】深入理解Mobx | leeing的登山之旅</title>
   
 
 
@@ -345,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2018/08/07/ReactDiff/">
+    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2019/03/08/【译】深入理解Mobx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="leeing">
@@ -362,7 +368,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">【React篇】分析diff算法
+          <h1 class="post-title" itemprop="name headline">【译】深入理解Mobx
               
             
           </h1>
@@ -387,9 +393,13 @@
                 
               
 
-              <time title="创建时间：2018-08-07 18:14:33" itemprop="dateCreated datePublished" datetime="2018-08-07T18:14:33+08:00">2018-08-07</time>
+              <time title="创建时间：2019-03-08 01:50:56 / 修改时间：01:52:05" itemprop="dateCreated datePublished" datetime="2019-03-08T01:50:56+08:00">2019-03-08</time>
             
 
+            
+              
+
+              
             
           </span>
 
@@ -433,7 +443,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">2k</span>
+                <span title="本文字数">5.3k</span>
               
 
               
@@ -447,7 +457,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">2 分钟</span>
+                <span title="阅读时长">5 分钟</span>
               
             </div>
           
@@ -467,45 +477,77 @@
       
 
       
-        <blockquote>
-<p>diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。</p>
-</blockquote>
-<h1 id="传统的diff算法"><a href="#传统的diff算法" class="headerlink" title="传统的diff算法"></a>传统的diff算法</h1><p>diff算法，即微分算法。计算一颗树形结构转换成另一颗树形结构的最少操作，是一个复杂且值得研究的问题。传统diff算法通过循环递归对节点进行依次对比，效率低下，算法复杂度达到O(n^3)，其中n是树中节点的总数。这意味着如果要展示1000个节点，就要依次执行上十亿次的比较。这种指数型的性能消耗对于前端渲染场景来说太可怕了！</p>
-<h1 id="react中的diff算法"><a href="#react中的diff算法" class="headerlink" title="react中的diff算法"></a>react中的diff算法</h1><h3 id="diff策略"><a href="#diff策略" class="headerlink" title="diff策略"></a>diff策略</h3><p>首先，我们需要知道react的diff算法有3个策略</p>
+        <p><img src="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&amp;fm=26&amp;gp=0.jpg" alt="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&amp;fm=26&amp;gp=0.jpg"></p>
+<p>首先，先让我们看一下Mobx的核心概念。</p>
 <ol>
-<li>WebUI中DOM节点跨层级的移动操作特别少，可以忽略不计</li>
-<li>拥有相同类的两个组件将会生成相似的树形结构，拥有不同类的两个组件将会生成不同的属性结构</li>
-<li>对于同一层级的一组子节点，它们可以通过唯一id进行区分</li>
+<li><p><strong>可观察状态(Observable state)。</strong><br>任何可以变异且可以作为计算值源的值都是state。Mobx可以开箱即用地使绝大多数类型的值（基本类型，数组，类，对象）变成可观察的（甚至深度观察）。</p>
+</li>
+<li><p><strong>计算值(Computed values)。</strong><br>任何可观察的值可以使用纯函数计算得出任何值。计算值的范围可以从简单的字符串到复杂的对象甚至dom操作上。计算值会有懒惰地对状态变化做出反应。</p>
+</li>
+<li><p><strong>反应(Reactions)。</strong><br>反应有点类似于计算值，但是它不产生新值，而是作为桥梁衔接了响应式编程和命令式编程，产生一个副作用（I/O操作），例如打印到控制台，发送网络请求，更新dom树等。</p>
+</li>
+<li><p><strong>操作(Actions)。</strong><br>操作是改变状态(state)的主要手段。操作不是状态改变后的反应，是改变的来源，例如用户事件或web-socket连接，用以改变可观察的状态。</p>
+</li>
 </ol>
 <a id="more"></a>
-<h3 id="tree-diff"><a href="#tree-diff" class="headerlink" title="tree diff"></a>tree diff</h3><p>基于策略一，React对树的算法进行了简洁明了的优化，即对树进行分层比较，两棵树只会对同一层级进行比较。当发现节点不存在时，测该节点及其子节点会全部被删掉，不会进行进一步的比较。</p>
 <blockquote>
-<p>如果出现了节点跨层级的移动，diff会有怎样的表现呢？</p>
+<p>计算值和反应在本文章的后续中都成为派生(derivations)。到目前为止，这听起来可能有点学术性，所以，我们让它具体点。在excel电子表格中，所有具有值的数据单元格都是可观察状态的，公式和图标是可以从数据单元格和其他公式派生的计算值。在屏幕上绘制数据单元格或公式的结果就是一个反应(reaction)，改变数据单元格或公式就是一个操作(action)</p>
 </blockquote>
-<p>假设有A、B两个父节点，a、b两个子节点，形如A-&gt;a,B-&gt;b，当a从A之下移动到A、B平级时，当A发现a不在了，则会删除a及a的子节点，当A、B这一层级发现多出了a时，则会创建一个a。</p>
-<h4 id="这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。"><a href="#这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。" class="headerlink" title="这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。"></a>这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。</h4><h3 id="component-diff"><a href="#component-diff" class="headerlink" title="component diff"></a>component diff</h3><p>react是基于组件构建应用的，对于组件间的比较所采取的策略也是非常简洁、高效的。</p>
+<p>下面这个例子结合了Mobx和React，并且包含了以上4个概念：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  @observable firstName = <span class="string">"Michel"</span>;</span><br><span class="line">  @observable lastName = <span class="string">"Weststrate"</span>;</span><br><span class="line">  @observable nickName;</span><br><span class="line">  </span><br><span class="line">  @computed get fullName() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">" "</span> + <span class="keyword">this</span>.lastName;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> michel = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Reaction: log the profile info whenever it changes</span></span><br><span class="line">autorun(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(person.nickName ? person.nickName : person.fullName));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Example React component that observes state</span></span><br><span class="line"><span class="keyword">const</span> profileView = observer(<span class="function"><span class="params">props</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (props.person.nickName)</span><br><span class="line">    <span class="keyword">return</span> &lt;div&gt;&#123;props.person.nickName&#125;&lt;/div&gt;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> &lt;div&gt;&#123;props.person.fullName&#125;&lt;/div&gt;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Action:</span></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> michel.nickName = <span class="string">"mweststrate"</span>, <span class="number">5000</span>)</span><br><span class="line"></span><br><span class="line">React.render(React.createElement(profileView, &#123; <span class="attr">person</span>: michel &#125;), <span class="built_in">document</span>.body);</span><br><span class="line"><span class="comment">// This snippet is runnable in jsfiddle: https://jsfiddle.net/mweststrate/049r6jox/</span></span><br><span class="line">view rawprofile.jsx hosted <span class="keyword">with</span> ❤ by GitHub</span><br></pre></td></tr></table></figure>
+<p>我们可以画一张依赖图：</p>
+<p><img src="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png" alt="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png"><br>Figure1：profileView组件的依赖关系树。fullName处于reactive mode，主动观察firstName和lastName</p>
+<p>这个应用中，状态由可观察状态捕获（蓝色图标）。绿色的fullName是计算值，由可观察状态firstName和lastName自动衍生得出。同样，profileView由nickName和fullName衍生得出。profileView将通过产生副作用来响应状态更改——它更新React组件树。</p>
+<p>当使用Mobx时，依赖关系树被最低限度定义。举个例子，一旦profileView的有了nickName，且渲染不再受fullName的值的影响，也不受firstName和lastName的影响，那么他们之间所有的观察者关系将被清除，Mobx将自动的简化依赖树，如下图：</p>
+<p><img src="https://cdn-images-1.medium.com/max/1600/1*SXiDJ_mQ0ctEj2QEurLpqA.png" alt="https://cdn-images-1.medium.com/max/1600/1*SXiDJ_mQ0ctEj2QEurLpqA.png"><br>Figure2：当profileView具有nickName时的依赖关系树，与Figure1相反，fullName现在处于lazy mode，且不再观察firstName和lastName</p>
+<p>Mobx总是使用最小化计算次数去产生状态。接下来，我将介绍用于实现此目标的几种策略，但在深入了解计算值和反应如何与状态同步之前，让我们首先描述Mobx背后的原理：</p>
+<p><strong>对状态变化做出反应总是比对状态变化做出动作要好。（Reacting to state changes is always better then acting on state changes.）</strong></p>
+<p>应用程序响应状态更改的必要操作是通常会创建或更新一些值，大多数的操作(actions)管理着本地缓存。dom更新、批量更新值、请求后端，这些都可以被认为变相地使缓存失效。要确保这些缓存保持同步，你需要订阅(subscribe)未来的状态更改，以便再次触发你的操作。</p>
+<p>但是观察者模式有一个基本的问题：当你的应用变大时，你可能会犯错，比如依然订阅不再使用的值或忘记订阅一些值。</p>
+<p>像flux风格的订阅很容易出现这种超额订阅的情况。使用React时，你可以通过在渲染中打印来判断你的组件是否被超额订阅了。Mobx会将打印出的超额订阅数减少到0。这个想法很简单但违反直觉：订阅越多，重新计算越少。Mobx为你管理数千个观察者，你可以有效地权衡内存的CPU周期。</p>
+<p>超额订阅也以非常微妙的形式存在。如果你订阅了使用的数据，但并未在所有条件下订阅，那么你依然需要超额订阅。例如，如果profileView组件订阅了fullName，并且profileView有nickName，这就将超额订阅。因此Mobx设计背后的一个重要原则是：</p>
+<p><strong>在运行时才能实现最小、一致地订阅子集（A minimal, consistent set of subscriptions can only be achieved if subscriptions are determined at run-time）。</strong></p>
+<p>Mobx背后的第二个重要思想是，对于任何比TodoMVC更复杂的应用程序，通常需要一个数据图而不是规范化的树，以一种最佳方式存储状态。数据图可以实现参照一致性并避免数据重复，从而保证衍生值永远不会过时。</p>
+<p><strong>Mobx如何有效地将所有衍生保持在一个一致地状态？</strong></p>
+<p>答案是：不缓存，只有在需要时再重新计算衍生。这不是很昂贵吗？Mobx认为不是，反而这是很高效地。原因是Mobx不会运行所有衍生，但确保参与reaction的computed values与可观察状态保持同步。这些衍生被称为响应式的。再次以excel举例：只有当那些被观察着的当前可见或被间接使用的公式发生变化时，才会去重新计算值。</p>
+<p><strong>Lazy versus reactive evaluation</strong></p>
+<p>那么反应没有直接或间接使用的计算呢？你依然可以随时检查计算值的值，如fullName。答案是简单的：如果一个计算不是reactive的，它将被按需处理。就像一个普通的getter函数一样。懒衍生如果没有用了，将被简单的垃圾回收。记住computed values总是需要使用纯函数，因为对于纯函数而言，它是懒衍生还是直接使用并不重要。在相同的可观察状态下，computed values总是给出相同的结果。</p>
+<p><strong>运行计算</strong></p>
+<p>Reaction和Computed values在Mobx中都以相同的方式运行。当重新计算被触发时，该函数将被压入到衍生堆栈中。只要计算正在运行，每个被访问的observable都会将自身注册为衍生堆栈最顶层函数的依赖项。当computed value被需要了，如果该值处于reactive状态，则该值可以简单地是最后计算得出。否则它将push自己到衍生堆栈中，切换到reactive模式并开始计算。</p>
+<p><img src="https://cdn-images-1.medium.com/max/800/1*Pb3Wd14BlXPgqylBN_y-hQ.png" alt="https://cdn-images-1.medium.com/max/800/1*Pb3Wd14BlXPgqylBN_y-hQ.png"><br>Figure 4：profileView执行期间，一些observable state和computed values被观察着。computed values可能重新计算，这会产生依赖关系树，如Figure 1所示。</p>
+<p>当一个计算完成后，将得到在执行期间访问的可观察列表。在profileView的例子中，这个list将只包含nickName或nickName和fullName属性。任何被移除的属性都将不再观察（此时computed values可能会从反应模式返回到惰性模式），任何被添加的可观察属性将被观察，直到下一次计算。例如，将来将更改firstName的值，fullName将会知道自己该被重新计算，从而profileView会重新计算。下一段会详细解释这一过程。</p>
+<p><strong>Propagating state changes</strong></p>
+<p><img src="https://cdn-images-1.medium.com/max/800/1*Et95GdR7OeOofl_V0Od4iA.png" alt="https://cdn-images-1.medium.com/max/800/1*Et95GdR7OeOofl_V0Od4iA.png"></p>
+<p>Figure 5：更改值1对依赖关系树的影响。虚线表示将被标记为旧的观察者。数字表示计算的顺序。</p>
+<p>衍生将自动对状态变化做出反应。所有反应同步发生，更重要的是无瑕疵。修改可观察值时，将执行以下算法：</p>
 <ol>
-<li>如果是同一类型的组件，按照原策略继续比较Virtual Dom树即可</li>
-<li>如果不是，则将该组件判断为dirty component，从而替换整个组件下的所有子节点。</li>
-<li>对于同一类型的组件，有可能其Virtual Dom没有任何变化，如果能够确切的知道这点，那么就可以节省大量的diff运算时间。因此react提供shouldComponentUpdate()来判断该组件是否需要进行diff算法分析。</li>
+<li><p>可观察值向所有观察者发送过时通知，表明它已变得陈旧。任何受影响的computed values将以递归方式将通知传递给其观察者。因此，依赖关系树的一部分将被标记为陈旧。以Figure 5为例，当值1改变时观察者将变成陈旧的，并用橘色虚线标记。所有的衍生都可能被变化的值影响。</p>
+</li>
+<li><p>在发送陈旧通知之后并且存储新值之后，一个就绪通知将被发送。用于指示该值是否确实发生了变化。</p>
+</li>
+<li><p>一旦衍生收到步骤1中收到步骤1中收到的每个陈旧通知的就绪通知，它就会知道所有的被观察值都稳定了，于是将开始重新计算。计算 就绪/陈旧 消息的数量将确保这一点。例如，计算值4将仅在计算值3变得稳定后重新计算。</p>
+</li>
+<li><p>如果没有就绪消息指出一个值变化了，衍生将直接告诉自己的观察者它已经准备好了且没有变化中的值，否则将重新计算并发送一个就绪消息给自己的观察者。执行顺序如Figure 5所示。注意，如果计算值4重新评估但没有产生新值，则最后一个“-”将永远不会执行。</p>
+</li>
 </ol>
-<blockquote>
-<p>这里存在一个问题，如果有一个组件D，下面有E、F两个子节点，当D变为G时，虽然子节点依然是E、F，但react会认为它是不同类型的组件，会直接删除D，重新创建G，尽管D和G结构相似。这时虽然diff会影响性能，但正如diff策略二所言：不同类型的组件很少存在相似dom树的情况，因此这种极端因素很难在实际开发过程中造成重大的影响。</p>
-</blockquote>
-<h3 id="element-diff"><a href="#element-diff" class="headerlink" title="element diff"></a>element diff</h3><p>当节点处于同一层级时，diff提供了3种节点操作。</p>
-<ul>
-<li>增 INSERT_MARKUP</li>
-<li>删 REMOVE_NODE</li>
-<li>移 MOVE_EXISTING</li>
-</ul>
-<p>增和删比较好理解，这里不再赘述了，这里主要讲一下“移”。<br>按照diff策略三，我们在同一层级的节点上加入了唯一id，以下简称key。</p>
-<ul>
-<li>当没有添加key时，移是比较蛋疼的，假设有一组旧节点A、B、C、D和一组新节点B、A、D、C，此时diff发现 B!=A，则创建并插入B至新集合，删除旧集合A，以此类推，创建并插入A、D、C，删除B、C、D。这怎么玩？</li>
-<li>当有了key之后，那就愉快多了。依然是上述的两组新旧节点，此时diff通过key发现新旧集合中的节点都是相同的节点，因此无需进行节点删除和创建，只需要将旧集合中节点的位置进行移动即可。</li>
-</ul>
-<h4 id="那么具体是怎么移动的呢？"><a href="#那么具体是怎么移动的呢？" class="headerlink" title="那么具体是怎么移动的呢？"></a>那么具体是怎么移动的呢？</h4><p>依然是上述的A、B、C、D和B、A、D、C。首先对新集合中的节点进行遍历，通过key判断新旧集合中是否存在相同的节点，如果存在，则移动。但在移动之前需要将当前节点在旧集合中的位置oldIndex与lastIndex进行比较，如果lastIndex &gt; oldIndex，则进行移动。</p>
-<p>以A为例，在新集合中，发现A的lastIndex = 1，旧集合中oldIndex = 0，此时lastIndex &gt; oldIndex，则将A进行移动，并将lastIndex更新为新集合中A的位置。A.oldIndex此时为1。进入下一个节点的判断……</p>
-<h3 id="react中diff的不足与待优化的点？"><a href="#react中diff的不足与待优化的点？" class="headerlink" title="react中diff的不足与待优化的点？"></a>react中diff的不足与待优化的点？</h3><p>如果A、B、C、D更新为D、A、B、C，理论上只要移动D即可，然而由于D在就集合中的位置是最大的，导致实际是A、B、C移动到D之后。因此建议在开发过程中，尽量减少类似将最后一个节点移动到列表首部的操作，当节点数量过大或更新操作过于频繁时，这在一定程度上会影响react的渲染性能。</p>
+<p>前两段总结了如何在运行时跟踪可观察值和衍生之间的依赖关系以及变化在衍生中是如何传播的。此时你会发现reaction基本上就是一个始终处于反应模式的computed value。<strong>重点：这个算法可以非常有效地实现而不需要闭包，只需要一堆指针数组。</strong>另外，Mobx还应用了许多其他优化，这些优化超出了本文的范围。</p>
+<p><strong>同步执行</strong></p>
+<p>人们常惊讶于Mobx同步运行所有内容。这有两大好处：第一点是不可能观察陈旧的衍生。因此，在更改影响它的值后，可以立即使用衍生值。第二点是这是追踪堆栈和调试变得简单，它避免了Promise/Async库所特有的无用堆栈跟踪。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">transaction(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  michel.firstName = <span class="string">"Mich"</span>;</span><br><span class="line">  michel.lastName = <span class="string">"W."</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>(事务示例，它确保没有人能追踪到像Michaaa这样的中间值)</p>
+<p>同步执行还引入了对事务的需求。如果立即连续应用几个突变，在应用所有更改后，最好重新评估所有衍生。在transaction中包装action能实现这个目的。事务推迟所有就绪通知，直到事务块执行完成。请注意，事务仍然同步运行和更新所有内容。</p>
+<p>这总结了Mobx最基本的实现细节。这没有涵盖所有内容，但是很高兴你可以组合你的computed value了。通过组合reactive computations，甚至可以自动的将一张数据图转换为另一张数据图并用最少的补丁数保持最新的衍生，这使得实现复杂模式变得简单。</p>
+<p><strong>总结</strong></p>
+<ol>
+<li><p>复杂应用程序的状态最好用图表表示，以实现参考一致性，更接近问题的核心的心理模型。</p>
+</li>
+<li><p>不应该使用手动定义的订阅或游标来强制更改状态，这将不可避免的导致由于订阅不足或超额订阅导致的错误。</p>
+</li>
+<li><p>使用运行时分析来确定最小的observer-&gt;observable的关系，这导致了一种计算模型，可以保证在没有观察过期值的情况下运行最小量的衍生。</p>
+</li>
+<li><p>任何不需要实现有效副作用的衍生都可以完全优化。</p>
+</li>
+</ol>
 
       
     </div>
@@ -556,7 +598,7 @@
     <strong>本文作者： </strong>leeing</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://1eeing.github.io/2018/08/07/ReactDiff/" title="【React篇】分析diff算法">http://1eeing.github.io/2018/08/07/ReactDiff/</a>
+    <a href="http://1eeing.github.io/2019/03/08/【译】深入理解Mobx/" title="【译】深入理解Mobx">http://1eeing.github.io/2019/03/08/【译】深入理解Mobx/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
@@ -569,11 +611,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/React/" rel="tag"># React</a>
-          
-            <a href="/tags/diff算法/" rel="tag"># diff算法</a>
-          
-            <a href="/tags/学习笔记/" rel="tag"># 学习笔记</a>
+            <a href="/tags/Mobx/" rel="tag"># Mobx</a>
           
         </div>
       
@@ -606,8 +644,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/07/UDP/" rel="next" title="【网络篇】UDP 和 TCP">
-                <i class="fa fa-chevron-left"></i> 【网络篇】UDP 和 TCP
+              <a href="/2019/01/18/Reconciliation/" rel="next" title="深入了解React之Reconciliation">
+                <i class="fa fa-chevron-left"></i> 深入了解React之Reconciliation
               </a>
             
           </div>
@@ -615,10 +653,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/08/07/eventLoop/" rel="prev" title="【浏览器篇】浏览器中的Event Loop">
-                【浏览器篇】浏览器中的Event Loop <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -663,17 +697,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -885,22 +910,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#传统的diff算法"><span class="nav-number">1.</span> <span class="nav-text">传统的diff算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#react中的diff算法"><span class="nav-number">2.</span> <span class="nav-text">react中的diff算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#diff策略"><span class="nav-number">2.0.1.</span> <span class="nav-text">diff策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tree-diff"><span class="nav-number">2.0.2.</span> <span class="nav-text">tree diff</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#component-diff"><span class="nav-number">2.0.3.</span> <span class="nav-text">component diff</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#element-diff"><span class="nav-number">2.0.4.</span> <span class="nav-text">element diff</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#那么具体是怎么移动的呢？"><span class="nav-number">2.0.4.1.</span> <span class="nav-text">那么具体是怎么移动的呢？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#react中diff的不足与待优化的点？"><span class="nav-number">2.0.5.</span> <span class="nav-text">react中diff的不足与待优化的点？</span></a></li></ol></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
