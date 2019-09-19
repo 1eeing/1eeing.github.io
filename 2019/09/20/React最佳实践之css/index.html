@@ -114,22 +114,20 @@
 
 
 
-  <meta name="description" content="Rebase改命令可以说和merge命令得到的结果基本是一致的通常merge操作将分支上的代码合并到master中，分支样子如下所示  使用rebase后，会将develop上的commit按顺序移到master的第三个commit后面，分支样子如下">
-<meta name="keywords" content="基础知识,计算机通识,Git高级操作">
+  <meta name="description" content="React中的css到底该怎么写？这一直是个饱受争论的话题。本文将结合React CSS的发展史，分别叙述CSS in js与CSS module两种风格中的最佳实践。">
+<meta name="keywords" content="React,React最佳实践系列">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【基础篇】git高级操作">
-<meta property="og:url" content="http://1eeing.github.io/2018/08/27/git高级操作/index.html">
+<meta property="og:title" content="《React最佳实践系列》之css篇">
+<meta property="og:url" content="http://1eeing.github.io/2019/09/20/React最佳实践之css/index.html">
 <meta property="og:site_name" content="leeing的登山之旅">
-<meta property="og:description" content="Rebase改命令可以说和merge命令得到的结果基本是一致的通常merge操作将分支上的代码合并到master中，分支样子如下所示  使用rebase后，会将develop上的commit按顺序移到master的第三个commit后面，分支样子如下">
+<meta property="og:description" content="React中的css到底该怎么写？这一直是个饱受争论的话题。本文将结合React CSS的发展史，分别叙述CSS in js与CSS module两种风格中的最佳实践。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/4/23/162f109db27be054?w=505&h=461&f=png&s=22796">
-<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/4/23/162f11cc2cb8b332?w=505&h=563&f=png&s=26514">
-<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/4/23/162f14df98ce3d83?w=950&h=118&f=png&s=77151">
-<meta property="og:updated_time" content="2018-08-26T17:16:04.813Z">
+<meta property="og:image" content="http://img1.juimg.com/180124/330595-1P124141G060.jpg">
+<meta property="og:updated_time" content="2019-09-19T17:34:44.402Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="【基础篇】git高级操作">
-<meta name="twitter:description" content="Rebase改命令可以说和merge命令得到的结果基本是一致的通常merge操作将分支上的代码合并到master中，分支样子如下所示  使用rebase后，会将develop上的commit按顺序移到master的第三个commit后面，分支样子如下">
-<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2018/4/23/162f109db27be054?w=505&h=461&f=png&s=22796">
+<meta name="twitter:title" content="《React最佳实践系列》之css篇">
+<meta name="twitter:description" content="React中的css到底该怎么写？这一直是个饱受争论的话题。本文将结合React CSS的发展史，分别叙述CSS in js与CSS module两种风格中的最佳实践。">
+<meta name="twitter:image" content="http://img1.juimg.com/180124/330595-1P124141G060.jpg">
 
 
 
@@ -138,7 +136,7 @@
 
 
 
-  <link rel="canonical" href="http://1eeing.github.io/2018/08/27/git高级操作/"/>
+  <link rel="canonical" href="http://1eeing.github.io/2019/09/20/React最佳实践之css/"/>
 
 
 
@@ -148,7 +146,7 @@
   };
 </script>
 
-  <title>【基础篇】git高级操作 | leeing的登山之旅</title>
+  <title>《React最佳实践系列》之css篇 | leeing的登山之旅</title>
   
 
 
@@ -349,7 +347,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2018/08/27/git高级操作/">
+    <link itemprop="mainEntityOfPage" href="http://1eeing.github.io/2019/09/20/React最佳实践之css/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="leeing">
@@ -366,7 +364,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">【基础篇】git高级操作
+          <h1 class="post-title" itemprop="name headline">《React最佳实践系列》之css篇
               
             
           </h1>
@@ -391,7 +389,7 @@
                 
               
 
-              <time title="创建时间：2018-08-27 01:14:20 / 修改时间：01:16:04" itemprop="dateCreated datePublished" datetime="2018-08-27T01:14:20+08:00">2018-08-27</time>
+              <time title="创建时间：2019-09-20 01:31:03 / 修改时间：01:34:44" itemprop="dateCreated datePublished" datetime="2019-09-20T01:31:03+08:00">2019-09-20</time>
             
 
             
@@ -413,7 +411,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习笔记/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/个人原创/" itemprop="url" rel="index"><span itemprop="name">个人原创</span></a></span>
 
                 
                 
@@ -441,7 +439,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">790</span>
+                <span title="本文字数">5.2k</span>
               
 
               
@@ -455,7 +453,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">1 分钟</span>
+                <span title="阅读时长">5 分钟</span>
               
             </div>
           
@@ -475,35 +473,94 @@
       
 
       
-        <h1 id="Rebase"><a href="#Rebase" class="headerlink" title="Rebase"></a>Rebase</h1><p>改命令可以说和merge命令得到的结果基本是一致的<br>通常merge操作将分支上的代码合并到master中，分支样子如下所示</p>
-<p><img src="https://user-gold-cdn.xitu.io/2018/4/23/162f109db27be054?w=505&amp;h=461&amp;f=png&amp;s=22796" alt="https://user-gold-cdn.xitu.io/2018/4/23/162f109db27be054?w=505&amp;h=461&amp;f=png&amp;s=22796"></p>
-<p>使用rebase后，会将develop上的commit按顺序移到master的第三个commit后面，分支样子如下</p>
-<a id="more"></a>
-<p><img src="https://user-gold-cdn.xitu.io/2018/4/23/162f11cc2cb8b332?w=505&amp;h=563&amp;f=png&amp;s=26514" alt="https://user-gold-cdn.xitu.io/2018/4/23/162f11cc2cb8b332?w=505&amp;h=563&amp;f=png&amp;s=26514"></p>
-<p>rebase对比merge<br>优点：</p>
-<ul>
-<li>合并后的结果很清晰，只有一条线</li>
-</ul>
-<p>缺点：</p>
-<ul>
-<li>如果一旦出现冲突，解决冲突很麻烦，可能要解决多个冲突，但是merge出现冲突只需要解决一次</li>
-</ul>
-<p>使用rebase应该在需要被rebase的分支上操作，并且该分支是本地分支。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">## branch develop</span><br><span class="line">git rebase master</span><br><span class="line">git checkout master</span><br><span class="line">## 用于将 master 上的 HEAD 移动到最新的commit</span><br><span class="line">git merge develop</span><br></pre></td></tr></table></figure></p>
-<hr>
-<h1 id="stash"><a href="#stash" class="headerlink" title="stash"></a>stash</h1><p>stash用于临时保存工作目录的改动。开发中可能会遇到代码写一半需要切分支打包的问题，如果这时候你不想commit的话，就可以使用该命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git stash</span><br></pre></td></tr></table></figure></p>
-<p>使用该命令可以暂存你的工作目录，恢复如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git stash pop</span><br></pre></td></tr></table></figure></p>
-<hr>
-<h1 id="reflog"><a href="#reflog" class="headerlink" title="reflog"></a>reflog</h1><p>reflog可以看到HEAD的移动记录，加入之前误删了一个分支，可以通过git reflog看到移动HEAD的哈希值</p>
-<p><img src="https://user-gold-cdn.xitu.io/2018/4/23/162f14df98ce3d83?w=950&amp;h=118&amp;f=png&amp;s=77151" alt="https://user-gold-cdn.xitu.io/2018/4/23/162f14df98ce3d83?w=950&amp;h=118&amp;f=png&amp;s=77151"></p>
-<p>从图中可以看出，HEAD的最后一次移动行为是merge后，接下来分支new就被删除了，那么我们可以通过以下命令找回new分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout 37d9aca</span><br><span class="line">git checkout -b new</span><br></pre></td></tr></table></figure>
+        <p><img src="http://img1.juimg.com/180124/330595-1P124141G060.jpg" alt="http://img1.juimg.com/180124/330595-1P124141G060.jpg"></p>
 <blockquote>
-<p>reflog 记录是时效的，只会保存一段时间内的记录。</p>
+<p>React中的css到底该怎么写？这一直是个饱受争论的话题。本文将结合React CSS的发展史，分别叙述CSS in js与CSS module两种风格中的最佳实践。</p>
 </blockquote>
-<hr>
-<h1 id="Reset"><a href="#Reset" class="headerlink" title="Reset"></a>Reset</h1><p>如果你想删除刚写的commit，就可以通过以下命令实现</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD^</span><br></pre></td></tr></table></figure>
-<p>但是reset的本质并不是删除了commit，而是重新设置了HEAD和它指向的branch。</p>
+<a id="more"></a>
+<h2 id="行内样式"><a href="#行内样式" class="headerlink" title="行内样式"></a>行内样式</h2><p>首先，facebook提出<code>CSS in js</code>的概念，这很奇怪。<br>我们多年来所学的知识都在宣扬关注点分离的重要性，不应该将标记和css混在一起。但是React行内样式的提出，试图改变关注点分离这一概念。使其从技术分离向组件分离转变。</p>
+<p>通过<code>CSS in js</code>，<strong>有以下两个优点：</strong></p>
+<ol>
+<li>React将组件作为应用架构的基础单元，通过组合组件来创建应用。</li>
+<li>可以很方便的和逻辑进行交互。</li>
+</ol>
+<p>比如这样（先忽略直接将style对象传入带来的性能问题）</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">render()&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div style=&#123;&#123;<span class="attr">fontWeight</span>: <span class="keyword">this</span>.props.weight ? <span class="string">'bold'</span> : <span class="string">'normal'</span>&#125;&#125;&gt;hello world&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">  )</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><strong>行内样式也有缺点：</strong></p>
+<ol>
+<li>不支持伪选择器和伪元素</li>
+<li>不支持媒体查询</li>
+<li>不支持样式回退，因为js对象不支持两个同名属性</li>
+<li>不支持动画</li>
+<li>需要覆盖常规样式的时候，可能会需要<code>!important</code>来实现了</li>
+<li>调试不方便</li>
+<li>很关键的一点，如果是在服务端渲染的话，会使得页面体积变得很大</li>
+</ol>
+<p>事实证明，虽然行内样式解决了目标问题，却引发了更多的问题。</p>
+<h2 id="CSS-Module"><a href="#CSS-Module" class="headerlink" title="CSS Module"></a>CSS Module</h2><p>如果你认为行内样式的方案不适合自己的团队，但仍然希望尽量紧密结合样式与组件，那么<code>webpack</code>的<code>css-loader</code>就帮了你大忙！<br>关于<code>webpack</code>和详细配置，本文不再赘述。我们看一下本文主要用到的<code>loader</code>和<code>plugin</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> HTMLWebpackPlugin = <span class="built_in">require</span>(<span class="string">'html-webpack-plugin'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      ...</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\.css$/</span>,</span><br><span class="line">        use: [</span><br><span class="line">          &#123; <span class="attr">loader</span>: <span class="string">'style-loader'</span> &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            loader: <span class="string">'css-loader'</span>,</span><br><span class="line">            options: &#123;</span><br><span class="line">              modules: <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [</span><br><span class="line">    <span class="keyword">new</span> HTMLWebpackPlugin()</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上配置完以后，在终端启动项目后，就可以在网页中访问了。接下来我们开始编写具体代码。</p>
+<p>首先定义一个普通的css文件</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.button</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: blue;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#fff</span>;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">10px</span> <span class="number">20px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在js文件中引入</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> styles <span class="keyword">from</span> <span class="string">'./index.css'</span></span><br></pre></td></tr></table></figure>
+<p>import语句会导入一个样式对象，其所有属性就是index.css中定义的类，这时候运行一下console，开发者工具会输出一个形如这样的对象。这个key是根据文件散列值和其他一些参数生成的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  button: <span class="string">"_2wpxM3yizfwbWee6k0U1D4"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着，我们可以用这个对象去设置按钮的className属性</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Button = <span class="function"><span class="params">()</span> =&gt;</span> (</span><br><span class="line">  &lt;button className=&#123;styles.button&#125;&gt;Click it&lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">)</span></span><br></pre></td></tr></table></figure>
+<p>这样，按钮的样式就设置完成了。<br>我们打开开发者工具可以看到，button的类名就是上面的<code>_2wpxM3yizfwbWee6k0U1D4</code>。如果查看页面头部，我们还会发现相同的类名已经注入到页面中了。</p>
+<p><code>css-loader</code>允许你在js模块中导入css文件，并且启用<code>modules</code>标记时，所有类名都只作用于导入它们的模块。最后，<code>style-loader</code>接收<code>css-loader</code>转换的结果，并将样式注入到页面头部。</p>
+<p>这种用法非常强大，因为我们拥有了css的完整能力及表现性，又结合了局部作用域类名与显示依赖的优点。我们还可以像这样配置<code>localIdentName</code>参数，解决调试时信息不清晰的问题。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>: &#123;</span><br><span class="line">  rules: [</span><br><span class="line">    &#123;</span><br><span class="line">      test: <span class="regexp">/\.css$/</span>,</span><br><span class="line">      use: [</span><br><span class="line">        &#123; <span class="attr">loader</span>: <span class="string">'style-loader'</span> &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          loader: <span class="string">'css-loader'</span>,</span><br><span class="line">          options: &#123;</span><br><span class="line">            modules: <span class="literal">true</span>,</span><br><span class="line">            localIdentName: <span class="string">'[path][name]__[local]--[hash:base64:5]'</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>生产环境不需要这样的类名，更注重性能，因此我们想要更简短的类名和散列值。<br>我们可以在生产环境下使用<code>MiniCssExtractPlugin</code>将样式提取到单独的css文件，并将其放入<code>CDN</code>，从而获得更好的性能。</p>
+<p><strong>css-loader还支持一些关键词。</strong></p>
+<p>第一个就是<code>global</code>关键词。给任何类添加<code>:global</code>前缀，意味着请求CSS模块不要为当前选择器加上局部作用域。</p>
+<p>例如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-pseudo">:global</span> <span class="selector-class">.button</span> &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，你可以应用不需要局部作用域的样式。比如第三方组件。</p>
+<p>第二个就是<code>composes</code>，有了它，就可以从同个文件或外部依赖中引用类名，将其它类的所有样式应用于一个元素。</p>
+<p>例如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.text-red</span>&#123;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.button</span> &#123;</span><br><span class="line">  <span class="attribute">composes</span>: text-red;</span><br><span class="line">  <span class="attribute">background-color</span>: blue;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#fff</span>;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">10px</span> <span class="number">20px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终，button类的所有规则以及composes声明的所有规则都能作用于元素。</p>
+<p>这个特性非常强大，而且原理很巧妙。你可能以为它和<code>SASS</code>的<code>@extend</code>方法一样，只是将组合类复制到引用它们的位置，其实不是这样。简单来讲，所有组合类名都是逐个应用到DOM中的组件上。</p>
+<p>以我们的示例来说，代码如下：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;button <span class="class"><span class="keyword">class</span></span>=<span class="string">"_2wpxM3yizfwbWee6k0U1D4 Sf8w9cFdQXdRV_i9dgcOq"</span>&gt;Click it&lt;<span class="regexp">/button&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注入页面的css如下所示：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.Sf8w9cFdQXdRV_i9dgcOq</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">._2wpxM3yizfwbWee6k0U1D4</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: blue;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#fff</span>;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">10px</span> <span class="number">20px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="原子级CSS"><a href="#原子级CSS" class="headerlink" title="原子级CSS"></a>原子级CSS</h2><p>原子级CSS又称函数式CSS，是CSS的一种使用方式，即每个类只有一条规则。</p>
+<p>例如，可以用一个类来设置底部外边距为0：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.mb0</span> &#123;</span><br><span class="line">  <span class="attribute">margin-bottom</span>: <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后用另一个类设置font-weight为bold</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.fwb</span> &#123;</span><br><span class="line">  <span class="attribute">font-weight</span>: bold;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后将这些原子类用在元素上：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">"mb0 fwb"</span>&gt;Hello World&lt;<span class="regexp">/span&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这种技巧存在争议，但很高效。一方面，类是在CSS文件中定义，却在视图层组合，每次修改元素的样式都要同时修改两个地方；另一方面，它可以超快地搭建页面。</p>
+<p>其实，只要所有基本规则都定好，将这些类应用于元素或者用它们生成新的样式都非常快，这是一大优点。其次，使用原子级CSS可以控制css文件的大小，因为创建新组建时可以复用已有类的样式，不需要编写新样式，这对性能很有好处。</p>
+<h2 id="原子级CSS-Module"><a href="#原子级CSS-Module" class="headerlink" title="原子级CSS Module"></a>原子级CSS Module</h2><p>我们可以将CSS Module与原子级CSS结合起来使用。</p>
+<p>查看以下示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.title &#123;</span><br><span class="line">  composes: mb0 fwb;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&lt;span class=&quot;title&quot;&gt;Hello World&lt;/span&gt;</span><br></pre></td></tr></table></figure>
+<p>这种做法非常好，因为样式逻辑仍然保留在CSS中，同时CSS模块利用composes将所有单个类聚合到一个类中。</p>
+<p>上述代码的渲染结果如下所示：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">"title--3JCJR mb0--21SyP fwb--1JRhZ"</span>&gt;Hello World&lt;<span class="regexp">/span&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此处的<code>title</code>、<code>mb0</code>以及<code>fwb</code>都是自动加到元素上的。并且它们都只作用于局部。这样，我们就用上了CSS Module的所有优势。</p>
+<h2 id="styled-components"><a href="#styled-components" class="headerlink" title="styled-components"></a>styled-components</h2><p>最后，让我们看一下CSS in js中的王者——styled-components。<br>这个库可以说考虑到了其他组件样式库遇到的所有问题。</p>
+<p>在安装styled-components之后，我们可以这样使用它：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> styled <span class="keyword">from</span> <span class="string">'styled-components'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Button = styled.button<span class="string">`</span></span><br><span class="line"><span class="string">  background-color: blue;</span></span><br><span class="line"><span class="string">  color: #fff;</span></span><br><span class="line"><span class="string">  padding: 10px 20px;</span></span><br><span class="line"><span class="string">`</span></span><br></pre></td></tr></table></figure>
+<p>可以看到它使用了模板字符串，这意味着它可以用js的全部能力为元素添加样式。<br>这种看似奇怪的语法会返回普通的React组件Button，它渲染了一个按钮元素，并加上了模板中定义的样式。先创建唯一的类名，再将它加到元素上，最后向页面文档头部注入相应的样式。至此，样式生效了。</p>
+<p>渲染的组件如下所示：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;button <span class="class"><span class="keyword">class</span></span>=<span class="string">"kYvFOg"</span>&gt;Click it&lt;<span class="regexp">/button&gt;</span></span><br></pre></td></tr></table></figure>
+<p>页面上添加的样式如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.kYvFOg</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: blue;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#fff</span>;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">10px</span> <span class="number">20px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个库的优点如下在于支持几乎所有的css特性。比如，它支持<code>SASS</code>风格的伪类语法：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Button = styled.button<span class="string">`</span></span><br><span class="line"><span class="string">  background-color: blue;</span></span><br><span class="line"><span class="string">  color: #fff;</span></span><br><span class="line"><span class="string">  padding: 10px 20px;</span></span><br><span class="line"><span class="string">  &amp;:hover &#123;</span></span><br><span class="line"><span class="string">    background-color: #fff;</span></span><br><span class="line"><span class="string">    color: blue;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">`</span></span><br></pre></td></tr></table></figure>
+<p>它也支持媒体查询：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Button = styled.button<span class="string">`</span></span><br><span class="line"><span class="string">  background-color: blue;</span></span><br><span class="line"><span class="string">  color: #fff;</span></span><br><span class="line"><span class="string">  padding: 10px 20px;</span></span><br><span class="line"><span class="string">  &amp;:hover &#123;</span></span><br><span class="line"><span class="string">    background-color: #fff;</span></span><br><span class="line"><span class="string">    color: blue;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  @media (max-width: 480px) &#123;</span></span><br><span class="line"><span class="string">    padding: 10px 10px;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">`</span></span><br></pre></td></tr></table></figure>
+<p>它还可以很方便地覆盖样式，并设置不同属性来多次复用该组件。当你使用了形如<code>antd</code>之类的UI库，并希望自定义一些样式时，这个优点会非常明显。</p>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p><em>CSS in or not in js ? this is a question.</em></p>
+<p>我觉得没有绝对的最佳实践，只有在工程迭代的过程中，不停的找寻最适合工程、最适合团队的方案，这才是最明智的选择。</p>
+<h2 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h2><ul>
+<li>《React设计模式与最佳实践》第七章</li>
+</ul>
 
       
     </div>
@@ -554,7 +611,7 @@
     <strong>本文作者： </strong>leeing</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://1eeing.github.io/2018/08/27/git高级操作/" title="【基础篇】git高级操作">http://1eeing.github.io/2018/08/27/git高级操作/</a>
+    <a href="http://1eeing.github.io/2019/09/20/React最佳实践之css/" title="《React最佳实践系列》之css篇">http://1eeing.github.io/2019/09/20/React最佳实践之css/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
@@ -567,11 +624,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+            <a href="/tags/React/" rel="tag"># React</a>
           
-            <a href="/tags/计算机通识/" rel="tag"># 计算机通识</a>
-          
-            <a href="/tags/Git高级操作/" rel="tag"># Git高级操作</a>
+            <a href="/tags/React最佳实践系列/" rel="tag"># React最佳实践系列</a>
           
         </div>
       
@@ -604,8 +659,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/27/树和动态规划/" rel="next" title="【算法篇】树、动态规划及字符串相关">
-                <i class="fa fa-chevron-left"></i> 【算法篇】树、动态规划及字符串相关
+              <a href="/2019/03/15/Mobx原理/" rel="next" title="带你走进Mobx的原理">
+                <i class="fa fa-chevron-left"></i> 带你走进Mobx的原理
               </a>
             
           </div>
@@ -613,10 +668,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/09/13/Nginx/" rel="prev" title="彻底搞懂Nginx">
-                彻底搞懂Nginx <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -899,7 +950,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Rebase"><span class="nav-number">1.</span> <span class="nav-text">Rebase</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#stash"><span class="nav-number">2.</span> <span class="nav-text">stash</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reflog"><span class="nav-number">3.</span> <span class="nav-text">reflog</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reset"><span class="nav-number">4.</span> <span class="nav-text">Reset</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#行内样式"><span class="nav-number">1.</span> <span class="nav-text">行内样式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS-Module"><span class="nav-number">2.</span> <span class="nav-text">CSS Module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原子级CSS"><span class="nav-number">3.</span> <span class="nav-text">原子级CSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原子级CSS-Module"><span class="nav-number">4.</span> <span class="nav-text">原子级CSS Module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#styled-components"><span class="nav-number">5.</span> <span class="nav-text">styled-components</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾"><span class="nav-number">6.</span> <span class="nav-text">结尾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献："><span class="nav-number">7.</span> <span class="nav-text">参考文献：</span></a></li></ol></div>
             
 
           </div>
