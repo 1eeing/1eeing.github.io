@@ -115,7 +115,7 @@
 
 
   <meta name="description" content="首先，先让我们看一下Mobx的核心概念。  可观察状态(Observable state)。任何可以变异且可以作为计算值源的值都是state。Mobx可以开箱即用地使绝大多数类型的值（基本类型，数组，类，对象）变成可观察的（甚至深度观察）。  计算值(Computed values)。任何可观察的值可以使用纯函数计算得出任何值。计算值的范围可以从简单的字符串到复杂的对象甚至dom操作上。计算值会">
-<meta name="keywords" content="React,Mobx,译文">
+<meta name="keywords" content="Mobx,React,译文">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【译】深入理解Mobx">
 <meta property="og:url" content="http://1eeing.github.io/2019/03/08/【译】深入理解Mobx/index.html">
@@ -506,7 +506,7 @@
 <p>计算值和反应在本文章的后续中都称为衍生(derivations)。到目前为止，这听起来可能有点学术性，所以，我们让它具体点。在excel电子表格中，所有具有值的数据单元格都是可观察状态的，公式和图标是可以从数据单元格和其他公式衍生的计算值。在屏幕上绘制数据单元格或公式的结果就是一个反应(reaction)，改变数据单元格或公式就是一个操作(action)</p>
 </blockquote>
 <p>下面这个例子结合了Mobx和React，并且包含了以上4个概念：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  @observable firstName = <span class="string">"Michel"</span>;</span><br><span class="line">  @observable lastName = <span class="string">"Weststrate"</span>;</span><br><span class="line">  @observable nickName;</span><br><span class="line">  </span><br><span class="line">  @computed get fullName() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">" "</span> + <span class="keyword">this</span>.lastName;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> michel = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Reaction: log the profile info whenever it changes</span></span><br><span class="line">autorun(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(person.nickName ? person.nickName : person.fullName));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Example React component that observes state</span></span><br><span class="line"><span class="keyword">const</span> profileView = observer(<span class="function"><span class="params">props</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (props.person.nickName)</span><br><span class="line">    <span class="keyword">return</span> &lt;div&gt;&#123;props.person.nickName&#125;&lt;/div&gt;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> &lt;div&gt;&#123;props.person.fullName&#125;&lt;/div&gt;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Action:</span></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> michel.nickName = <span class="string">"mweststrate"</span>, <span class="number">5000</span>)</span><br><span class="line"></span><br><span class="line">React.render(React.createElement(profileView, &#123; <span class="attr">person</span>: michel &#125;), <span class="built_in">document</span>.body);</span><br><span class="line"><span class="comment">// This snippet is runnable in jsfiddle: https://jsfiddle.net/mweststrate/049r6jox/</span></span><br><span class="line">view rawprofile.jsx hosted <span class="keyword">with</span> ❤ by GitHub</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  @observable firstName = <span class="string">"Michel"</span>;</span><br><span class="line">  @observable lastName = <span class="string">"Weststrate"</span>;</span><br><span class="line">  @observable nickName;</span><br><span class="line">  </span><br><span class="line">  @computed get fullName() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">" "</span> + <span class="keyword">this</span>.lastName;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> michel = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Reaction: log the profile info whenever it changes</span></span><br><span class="line">autorun(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(person.nickName ? person.nickName : person.fullName));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Example React component that observes state</span></span><br><span class="line"><span class="keyword">const</span> profileView = observer(<span class="function"><span class="params">props</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (props.person.nickName)</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;props.person.nickName&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;props.person.fullName&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Action:</span></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> michel.nickName = <span class="string">"mweststrate"</span>, <span class="number">5000</span>)</span><br><span class="line"></span><br><span class="line">React.render(React.createElement(profileView, &#123; <span class="attr">person</span>: michel &#125;), <span class="built_in">document</span>.body);</span><br><span class="line"><span class="comment">// This snippet is runnable in jsfiddle: https://jsfiddle.net/mweststrate/049r6jox/</span></span><br><span class="line">view rawprofile.jsx hosted <span class="keyword">with</span> ❤ by GitHub</span><br></pre></td></tr></table></figure>
 <p>我们可以画一张依赖图：</p>
 <p><img src="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png" alt="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png"><br>Figure 1：profileView组件的依赖关系树。fullName处于reactive mode，主动观察firstName和lastName</p>
 <p>这个应用中，状态由可观察状态捕获（蓝色图标）。绿色的fullName是计算值，由可观察状态firstName和lastName自动衍生得出。同样，profileView由nickName和fullName衍生得出。profileView将通过产生副作用来响应状态更改——它更新React组件树。</p>
@@ -624,9 +624,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/React/" rel="tag"># React</a>
-          
             <a href="/tags/Mobx/" rel="tag"># Mobx</a>
+          
+            <a href="/tags/React/" rel="tag"># React</a>
           
             <a href="/tags/译文/" rel="tag"># 译文</a>
           
@@ -738,7 +738,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -858,7 +858,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">43</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">47</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -963,7 +971,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">88k</span>
+    <span title="站点总字数">94k</span>
   
 
   
@@ -972,7 +980,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">1:20</span>
+    <span title="站点阅读时长">1:26</span>
   
 </div>
 

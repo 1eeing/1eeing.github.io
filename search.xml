@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[从页面输入URL到展现，到底经历了什么？]]></title>
+    <url>%2F2019%2F10%2F17%2F%E4%BB%8E%E8%BE%93%E5%85%A5URL%E5%88%B0%E5%B1%95%E7%8E%B0%2F</url>
+    <content type="text"><![CDATA[这是一道常见的面试题，这次，我们就来彻底搞懂他。 首先，总的来说，分为以下几个过程 DNS解析 TCP连接 客户端发起HTTP请求 服务端接收请求，并返回对应的HTTP报文 浏览器解析报文、渲染页面 连接结束 具体过程dns解析DNS解析的过程就是寻找哪台机器上有你需要的资源的过程。当你输入网址的时候，其实访问的是他的唯一IP地址，但是IP地址不方便记忆，因此才有了网址。DNS解析就是将网址对应到IP地址的过程。 解析过程 DNS优化 DNS缓存 DNS负载均衡（也称DNS重定向） TCP连接、HTTP请求这里包含了TCP的握手和挥手、HTTPS以及浏览器缓存有关TCP、HTTP和HTTPS的知识请看我另一篇关于这部分知识的记录：http://blog.leeing.site/2018/08/07/HTTP/有关浏览器缓存的知识也可以看我另一篇关于这部分知识的记录：http://blog.leeing.site/2018/08/19/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5/这边就不详细介绍了。 浏览器解析渲染页面浏览器是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建CSSOM树，然后将两棵树合并为一棵render树，等到render树构建完成后，浏览器开始布局渲染并将其绘制到屏幕上。在这个过程中，涉及到两个概念，重绘和回流。DOM中各个元素都需要浏览器去计算其位置和大小，这个过程称为回流。当这些属性都确定下来之后，浏览器便开始绘制内容，这个过程称为重绘。页面在首次加载的时候必然会经历重绘和回流。且回流必定重绘，重绘不一定回流。重绘和回流是非常消耗性能的，尤其是在移动设备上，它会破坏用户体验，有时会造成页面卡顿。所以我们应该尽可能减少重绘和回流。 JS的解析是由浏览器中的JS解析引擎完成的。JS是单线程运行，但是存在一些任务特别耗时，如IO操作。因此，需要一种机制可以先执行排在后面的任务，这就是同步任务和异步任务（宏任务和微任务）。JS的执行机制就可以看做是一个主线程加一个任务队列。同步任务就是放在主线程上执行的任务，异步任务就是放在任务队列中的任务。所有的同步任务在主线程上执行，形成一个执行栈；异步任务有了运行结果就会在任务队列中添加一个事件；脚本执行时先依次运行执行栈，然后会从任务队列中提取事件，运行任务队列中的任务。这个过程不断重复，故而又称为事件循环（event loop）。 浏览器在解析的过程中，如果遇到请求外部资源时，如图片时，请求过程是异步的，并不会影响HTML文档进行加载。但是如果遇到JS文件，HTML会挂起渲染过程，不仅要等到其下载完成还要等其解析执行完毕，才会继续HTML的渲染过程。原因是JS有可能修改DOM结构。CSS的加载不影响JS文件的加载，但是影响JS文件的执行。因此JS代码执行前，浏览器必须保证CSS文件已经下载并加载完毕。这也是为什么建议CSS文件放在HEAD里，script标签包裹的JS文件放在body底部的原因。]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>基础知识</tag>
+        <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[常见的跨域技巧及其原理]]></title>
+    <url>%2F2019%2F10%2F17%2F%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%A8%E5%9F%9F%E6%8A%80%E5%B7%A7%2F</url>
+    <content type="text"><![CDATA[在了解怎么跨域之前，我们先要理解为什么会产生跨域。 跨域产生的原因浏览器存在同源策略，为了安全。所谓同源是指“协议+域名+端口”三者相同，缺一不可。 同源侧滤限制的内容有： Cookie、localStorage、IndexDB等存储型内容 DOM节点 ajax请求 有四个标签是允许加载跨域资源的 &lt;img&gt;标签 &lt;script&gt;标签 &lt;link&gt;标签 &lt;iframe&gt;标签 如何解决跨域在了解跨域是怎么产生了以后，我们来看看如何解决这个问题。 1、jsonp原理jsonp就是利用了&lt;script&gt;标签可以跨域请求资源的特性，将一个callback回调函数名，以形如?callback=test的方式拼接在请求url的search参数里，再通过GET请求传递给服务端。服务端接收到请求并处理完成后，返回一个形如test(response)的responseBody。这样，前端拿到响应结果后，就会执行test方法并拿到里面的结果。 代码实现前端代码实现可以在我的github里找到。 优缺点优点：兼容性好缺点：仅支持GET方法，可能会遭受XSS攻击。 2、cors浏览器会自动进行CORS通信，实现CORS的关键是服务端，只要服务端支持，就实现了跨域。 实现流程服务端设置Acces-Control-Allow-Origin就可以开启CORS。该属性表示哪些域名可以访问资源，如果设置通配符，则表示所有网站都可以访问资源。 通过CORS来解决跨域的话，会在发送请求时出现两种情况，简单请求和复杂请求。 简单请求只要同时满足以下两大条件，就属于简单请求。 条件1：使用下列方法之一 GET HEAD POST 条件二：Content-Type为下面三者之一 text/plain multipart/form-data application/x-www-form-urlencoded 复杂请求不符合以上条件的请求就是复杂请求。复杂请求会在正式通信之前，发送一个OPTION请求，该请求的作用是预检。通过该请求，来判断服务器是否支持跨域请求。 3、postMessage关于postMessage的可以看我的另一篇文章，《从iframe高度自适应了解postMessage》，这边不再过多介绍了。 4、websocketwebsocket也是支持跨域的。 5、服务端处理同源策略是浏览器的安全策略，所以，在服务端是不存在跨域问题的。因此，我们可以通过先请求同域下的服务器，服务器帮我们去请求原本直接请求会跨域的请求，然后将结果返回给前端。 这个服务端可以有多种实现方案，node、Nginx、甚至交给你们的后端都可以。 6、document.domain该方式只能用于二级域名相同的情况下，比如a.test.com与b.test.com。需要分别给两个页面添加document.domain = test.com，表示二级域名相同就可以实现跨域了。 7、通过img标签前面也提到了，&lt;img&gt;标签可以跨域。因此，当我们需要上报一些信息而不用关心返回结果的时候，可以使用&lt;img&gt;标签来跨域请求。该方法类似jsonp，将需要访问的url和参数拼接到img标签的url中，通过GET请求该图片，就可以实现跨域请求。 具体实现也可以参考我的github。 优缺点优点：兼容性好缺点：仅支持GET方法，但是因为不会用到返回值，所以遭受XSS攻击的可能性比jsonp低 适用场景打点上报之类的只需要请求，不需要用到返回值的场景。]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>基础知识</tag>
+        <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
+        <tag>安全</tag>
+        <tag>跨域</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[常见的网络攻击及其防范手段]]></title>
+    <url>%2F2019%2F10%2F17%2F%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB%E5%8F%8A%E5%85%B6%E9%98%B2%E8%8C%83%E6%89%8B%E6%AE%B5%2F</url>
+    <content type="text"><![CDATA[前端能遇到的网络攻击，基本只包含以下两类 XSS CSRF 这篇文章就整理一下常见的网络攻击及其防范手段。 XSS（跨站脚本攻击）是一种网站应用程式的安全漏洞攻击，是代码注入的一种。它允许恶意使用者将程式码注入到网页上，其他使用者在观看网页时就会受到影响。这类攻击通常包含了HTML以及使用者端脚本语言。 大概有以下三种攻击方式： 反射型XSS通过修改HTML节点或者执行JS代码来攻击网站，例如通过URL获取参数的时候，将url改成一段攻击脚本 存储型例如写了一篇包含攻击代码的文章，那么浏览文章的用户都会被攻击到 DOM-based以上两种都可算DOM-based类型 如何防御？ 转义输入输出的内容，对于引号、尖括号、斜杠进行转义 对于显示富文本来说，可以通过白名单过滤或者黑名单过滤 CSP（内容安全策略），本质上也是建立白名单，规定了浏览器只能够执行特定来源的代码HTTP Header中的Content-Security-Policy可以开启CSP，值： default-src ‘self’ 只允许加载本站资源 img-src https://* 只允许加载HTTPS协议图片 child-src ‘none’ 允许加载任何来源框架 更多属性 CSRF（跨站点请求伪造）如何攻击？假设网站中有一个通过Get请求提交用户评论的接口，那么攻击者就可以在钓鱼网站中加入一个图片，图片的地址就是评论接口1&lt;img src="http://www.xxx.com/xxx?comment='attack'" /&gt; Post提交的用表单123&lt;form action="http://www.xxx.com/xxx" id="CSRF" method="post"&gt; &lt;input name="comment" value="attack" type="hidden"&gt;&lt;/form&gt; 如何防御 Get请求不对数据进行修改 不让第三方网站访问到用户Cookie 阻止第三方网站请求接口 请求时附带验证信息，比如验证码或者token 补充： SameSite 该Cookie属性可以设置Cookie不随着跨域请求发送，但是兼容性不太好 验证Referer 通过验证Referer来判断该请求是否为第三方网站发起的 Token 服务器下发一个随机Token，每次请求将Token带上，服务器验证是否有效 密码安全密码必然不能铭文存储在数据库。并且也不建议只对密码单纯通过加密算法加密，因为存在彩虹表，可以反查出加密前的密码。因此，通常需要对密码加盐，然后进行几次不同加密算法的加密（加盐就是给原密码添加字符串，增加原密码长度） 加盐不能阻止别人盗号，但是能保证即使数据库泄露，也不会暴露用户的真实密码。但是攻击者可以通过暴力破解的方式破解密码。对于这种情况，通常使用验证码增加延时或者限制尝试次数。并且一旦用户输入了错误的密码，也不能直接提示密码错误，而应该提示账号或密码错误。 前端加密对安全防护意义不大，但是在遇到中间人攻击的情况下，可以避免名文密码被第三方获取]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>基础知识</tag>
+        <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
+        <tag>安全</tag>
+        <tag>网络攻击</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[javascript垃圾回收机制]]></title>
+    <url>%2F2019%2F10%2F17%2Fjavascript%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%2F</url>
+    <content type="text"><![CDATA[什么需要被释放？ 字符串 数组 对象 为什么它们需要被释放？因为它们没有固定大小，只有当它们大小已知的时候，才能对它们进行动态的存储方案。因此JS每次创建它们时，都必须分配内存，这就是动态分配内存。只要是动态分配内存的，都需要被释放。否则，JS的解释器将会消耗完系统中所有可用的内存，造成系统崩溃 例子：123var a = 'before'var b = 'overwrite a'var a = b 以上这个例子中，before这个字段失去了引用，系统检测到这个事实之后，就会释放该字符串的存储空间以便这些空间可以被再利用。 怎么垃圾回收？1、 标记清除（todo 这个解释不是很清晰）当变量进入执行环境时，就标记这个变量为“进入环境”。当变量离开环境时，则标记“离开环境”。理论上永远不会释放“进入环境”的变量，因为很可能会被用到。垃圾收集器在运行的时候，会给存储在内存中的所有变量都加上标记。然后，它会去掉环境中的变量以及被环境中的变量引用的标记。在此之后，如果变量再被加上标记，则该变量将被视为准备删除的变量，因为环境中的变量已经无法访问到这些变量了。最后。垃圾收集器完成内存清除工作，销毁那些带标记的值，并回收它们所占用的内存空间。 2、 引用计数（不太常见）引用计数的含义是，跟踪记录每个值被引用的次数。当声明了一个变量的并将一个引用类型赋值给该变量时，则这个值的引用次数就是1。相反，如果包含对这个值引用的变量被赋值成了另一个值，则这个值的引用次数就减1。当引用次数变为0时，则说明没有办法再访问这个值了，因而就可以将其所占的内存空间给收回来。这样，垃圾收集器下次再运行时，它就会释放那些引用次数为0的值所占的内存。 引用计数存在一个问题，如果两个对象相互引用了，则引用次数永远是1，不会被垃圾回收机制所回收。 1234var a = &#123;&#125;;var b = &#123;&#125;;a.someProperty = b;b.someProperty = a; 大量这样的相互引用就会导致大量的内存泄漏。 这个问题不太好避免。例如，DOM和BOM是用C++的COM（Component Object Modal，组件对象）对象实现的，而COM对象的垃圾回收器就是采用的引用计数的策略。因此，即使Javascript的垃圾回收器是使用标记清除的策略来实现的，只要访问了COM对象，依然会存在循环引用的问题。看下这个例子。 1234var elem = document.getElementById('element');var obj = &#123;&#125;;obj.element = elem;elem.obj = obj; 在这个例子中，一个DOM元素与一个原生JS对象之间建立了相互引用。由于相互引用，即使将elem这个DOM元素从页面中删除，内存也永远不会被回收。 我们可以手动切断循环引用来解决这个问题 12obj.element = null;elem.obj = null; 怎么减少垃圾内存1、 对象object优化避免使用someObj = {}来清空对象，因为这将会导致过多的内存创建。可以通过清空一个对象，再在此对象上添加属性的方式来达到复用对象的目的，从而节省内存。1234567function clearObj(obj)&#123; for(let key in obj)&#123; if(obj.hasOwnProperty(key))&#123; delete obj[key]; &#125; &#125;&#125; 2、 数组array优化同理，避免使用someArr = []来清空数组，可以使用someArr.length = 0来清空一个数组并复用它，来达到节省内存的目的。 3、 function优化如果一个function总是被重复创建和使用，可以用一个变量先保存它，从而达到节省内存的目的。1234this.func = function()&#123; console.log(Date.now());&#125;setTimeout(this.func, 1000);]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>基础知识</tag>
+        <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
+        <tag>垃圾回收</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《React最佳实践系列》之css篇]]></title>
     <url>%2F2019%2F09%2F20%2FReact%08%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B9%8Bcss%2F</url>
     <content type="text"><![CDATA[React中的css到底该怎么写？这一直是个饱受争论的话题。本文将结合React CSS的发展史，分别叙述CSS in js与CSS module两种风格中的最佳实践。 行内样式首先，facebook提出CSS in js的概念，这很奇怪。我们多年来所学的知识都在宣扬关注点分离的重要性，不应该将标记和css混在一起。但是React行内样式的提出，试图改变关注点分离这一概念。使其从技术分离向组件分离转变。 通过CSS in js，有以下两个优点： React将组件作为应用架构的基础单元，通过组合组件来创建应用。 可以很方便的和逻辑进行交互。 比如这样（先忽略直接将style对象传入带来的性能问题） 12345render()&#123; return ( &lt;div style=&#123;&#123;fontWeight: this.props.weight ? 'bold' : 'normal'&#125;&#125;&gt;hello world&lt;/div&gt; )&#125; 行内样式也有缺点： 不支持伪选择器和伪元素 不支持媒体查询 不支持样式回退，因为js对象不支持两个同名属性 不支持动画 需要覆盖常规样式的时候，可能会需要!important来实现了 调试不方便 很关键的一点，如果是在服务端渲染的话，会使得页面体积变得很大 事实证明，虽然行内样式解决了目标问题，却引发了更多的问题。 CSS Module如果你认为行内样式的方案不适合自己的团队，但仍然希望尽量紧密结合样式与组件，那么webpack的css-loader就帮了你大忙！关于webpack和详细配置，本文不再赘述。我们看一下本文主要用到的loader和plugin： 12345678910111213141516171819202122232425const HTMLWebpackPlugin = require('html-webpack-plugin')module.exports = &#123; ... module: &#123; rules: [ ... &#123; test: /\.css$/, use: [ &#123; loader: 'style-loader' &#125;, &#123; loader: 'css-loader', options: &#123; modules: true &#125; &#125; ] &#125; ] &#125;, plugins: [ new HTMLWebpackPlugin() ]&#125; 如上配置完以后，在终端启动项目后，就可以在网页中访问了。接下来我们开始编写具体代码。 首先定义一个普通的css文件 12345.button &#123; background-color: blue; color: #fff; padding: 10px 20px;&#125; 然后在js文件中引入 1import styles from './index.css' import语句会导入一个样式对象，其所有属性就是index.css中定义的类，这时候运行一下console，开发者工具会输出一个形如这样的对象。这个key是根据文件散列值和其他一些参数生成的。 123&#123; button: "_2wpxM3yizfwbWee6k0U1D4"&#125; 接着，我们可以用这个对象去设置按钮的className属性 123const Button = () =&gt; ( &lt;button className=&#123;styles.button&#125;&gt;Click it&lt;/button&gt;) 这样，按钮的样式就设置完成了。我们打开开发者工具可以看到，button的类名就是上面的_2wpxM3yizfwbWee6k0U1D4。如果查看页面头部，我们还会发现相同的类名已经注入到页面中了。 css-loader允许你在js模块中导入css文件，并且启用modules标记时，所有类名都只作用于导入它们的模块。最后，style-loader接收css-loader转换的结果，并将样式注入到页面头部。 这种用法非常强大，因为我们拥有了css的完整能力及表现性，又结合了局部作用域类名与显示依赖的优点。我们还可以像这样配置localIdentName参数，解决调试时信息不清晰的问题。 1234567891011121314151617module: &#123; rules: [ &#123; test: /\.css$/, use: [ &#123; loader: 'style-loader' &#125;, &#123; loader: 'css-loader', options: &#123; modules: true, localIdentName: '[path][name]__[local]--[hash:base64:5]' &#125; &#125; ] &#125; ]&#125; 生产环境不需要这样的类名，更注重性能，因此我们想要更简短的类名和散列值。我们可以在生产环境下使用MiniCssExtractPlugin将样式提取到单独的css文件，并将其放入CDN，从而获得更好的性能。 css-loader还支持一些关键词。 第一个就是global关键词。给任何类添加:global前缀，意味着请求CSS模块不要为当前选择器加上局部作用域。 例如： 123:global .button &#123; ...&#125; 这样，你可以应用不需要局部作用域的样式。比如第三方组件。 第二个就是composes，有了它，就可以从同个文件或外部依赖中引用类名，将其它类的所有样式应用于一个元素。 例如： 12345678910.text-red&#123; color: red;&#125;.button &#123; composes: text-red; background-color: blue; color: #fff; padding: 10px 20px;&#125; 最终，button类的所有规则以及composes声明的所有规则都能作用于元素。 这个特性非常强大，而且原理很巧妙。你可能以为它和SASS的@extend方法一样，只是将组合类复制到引用它们的位置，其实不是这样。简单来讲，所有组合类名都是逐个应用到DOM中的组件上。 以我们的示例来说，代码如下： 1&lt;button class="_2wpxM3yizfwbWee6k0U1D4 Sf8w9cFdQXdRV_i9dgcOq"&gt;Click it&lt;/button&gt; 注入页面的css如下所示： 123456789.Sf8w9cFdQXdRV_i9dgcOq &#123; color: red;&#125;._2wpxM3yizfwbWee6k0U1D4 &#123; background-color: blue; color: #fff; padding: 10px 20px;&#125; 原子级CSS原子级CSS又称函数式CSS，是CSS的一种使用方式，即每个类只有一条规则。 例如，可以用一个类来设置底部外边距为0： 123.mb0 &#123; margin-bottom: 0;&#125; 然后用另一个类设置font-weight为bold 123.fwb &#123; font-weight: bold;&#125; 然后将这些原子类用在元素上： 1&lt;span class="mb0 fwb"&gt;Hello World&lt;/span&gt; 这种技巧存在争议，但很高效。一方面，类是在CSS文件中定义，却在视图层组合，每次修改元素的样式都要同时修改两个地方；另一方面，它可以超快地搭建页面。 其实，只要所有基本规则都定好，将这些类应用于元素或者用它们生成新的样式都非常快，这是一大优点。其次，使用原子级CSS可以控制css文件的大小，因为创建新组建时可以复用已有类的样式，不需要编写新样式，这对性能很有好处。 原子级CSS Module我们可以将CSS Module与原子级CSS结合起来使用。 查看以下示例： 12345.title &#123; composes: mb0 fwb;&#125;&lt;span class=&quot;title&quot;&gt;Hello World&lt;/span&gt; 这种做法非常好，因为样式逻辑仍然保留在CSS中，同时CSS模块利用composes将所有单个类聚合到一个类中。 上述代码的渲染结果如下所示： 1&lt;span class="title--3JCJR mb0--21SyP fwb--1JRhZ"&gt;Hello World&lt;/span&gt; 此处的title、mb0以及fwb都是自动加到元素上的。并且它们都只作用于局部。这样，我们就用上了CSS Module的所有优势。 styled-components最后，让我们看一下CSS in js中的王者——styled-components。这个库可以说考虑到了其他组件样式库遇到的所有问题。 在安装styled-components之后，我们可以这样使用它： 1234567import styled from 'styled-components'const Button = styled.button` background-color: blue; color: #fff; padding: 10px 20px;` 可以看到它使用了模板字符串，这意味着它可以用js的全部能力为元素添加样式。这种看似奇怪的语法会返回普通的React组件Button，它渲染了一个按钮元素，并加上了模板中定义的样式。先创建唯一的类名，再将它加到元素上，最后向页面文档头部注入相应的样式。至此，样式生效了。 渲染的组件如下所示： 1&lt;button class="kYvFOg"&gt;Click it&lt;/button&gt; 页面上添加的样式如下： 12345.kYvFOg &#123; background-color: blue; color: #fff; padding: 10px 20px;&#125; 这个库的优点如下在于支持几乎所有的css特性。比如，它支持SASS风格的伪类语法： 123456789const Button = styled.button` background-color: blue; color: #fff; padding: 10px 20px; &amp;:hover &#123; background-color: #fff; color: blue; &#125;` 它也支持媒体查询： 123456789101112const Button = styled.button` background-color: blue; color: #fff; padding: 10px 20px; &amp;:hover &#123; background-color: #fff; color: blue; &#125; @media (max-width: 480px) &#123; padding: 10px 10px; &#125;` 它还可以很方便地覆盖样式，并设置不同属性来多次复用该组件。当你使用了形如antd之类的UI库，并希望自定义一些样式时，这个优点会非常明显。 结尾CSS in or not in js ? this is a question. 我觉得没有绝对的最佳实践，只有在工程迭代的过程中，不停的找寻最适合工程、最适合团队的方案，这才是最明智的选择。 参考文献： 《React设计模式与最佳实践》第七章]]></content>
@@ -21,8 +78,8 @@
       </categories>
       <tags>
         <tag>深入学习</tag>
-        <tag>React</tag>
         <tag>Mobx</tag>
+        <tag>React</tag>
       </tags>
   </entry>
   <entry>
@@ -33,8 +90,8 @@
         <category>译文</category>
       </categories>
       <tags>
-        <tag>React</tag>
         <tag>Mobx</tag>
+        <tag>React</tag>
         <tag>译文</tag>
       </tags>
   </entry>
@@ -102,9 +159,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
         <tag>网络</tag>
         <tag>服务器</tag>
         <tag>Nginx</tag>
@@ -131,9 +188,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
         <tag>算法</tag>
         <tag>动态规划</tag>
         <tag>树</tag>
@@ -148,10 +205,10 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
         <tag>浏览器</tag>
+        <tag>学习笔记</tag>
         <tag>缓存策略</tag>
       </tags>
   </entry>
@@ -163,9 +220,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
         <tag>算法</tag>
         <tag>排序</tag>
         <tag>链表</tag>
@@ -179,9 +236,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
         <tag>算法</tag>
         <tag>时间复杂度</tag>
         <tag>位运算</tag>
@@ -210,9 +267,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>
@@ -224,9 +281,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
         <tag>网络</tag>
         <tag>HTTP</tag>
         <tag>HTTPS</tag>
@@ -242,10 +299,10 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
         <tag>浏览器</tag>
+        <tag>学习笔记</tag>
         <tag>Event loop</tag>
       </tags>
   </entry>
@@ -258,8 +315,8 @@
       </categories>
       <tags>
         <tag>React</tag>
-        <tag>diff算法</tag>
         <tag>学习笔记</tag>
+        <tag>diff算法</tag>
       </tags>
   </entry>
   <entry>
@@ -270,9 +327,9 @@
         <category>学习笔记</category>
       </categories>
       <tags>
-        <tag>学习笔记</tag>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
+        <tag>学习笔记</tag>
         <tag>网络</tag>
         <tag>TCP</tag>
         <tag>UDP</tag>

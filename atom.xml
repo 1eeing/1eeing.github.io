@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://1eeing.github.io/"/>
-  <updated>2019-09-19T17:34:44.402Z</updated>
+  <updated>2019-10-16T16:31:31.255Z</updated>
   <id>http://1eeing.github.io/</id>
   
   <author>
@@ -15,6 +15,149 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从页面输入URL到展现，到底经历了什么？</title>
+    <link href="http://1eeing.github.io/2019/10/17/%E4%BB%8E%E8%BE%93%E5%85%A5URL%E5%88%B0%E5%B1%95%E7%8E%B0/"/>
+    <id>http://1eeing.github.io/2019/10/17/从输入URL到展现/</id>
+    <published>2019-10-16T16:30:47.796Z</published>
+    <updated>2019-10-16T16:31:31.255Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>这是一道常见的面试题，这次，我们就来彻底搞懂他。</p></blockquote><p>首先，总的来说，分为以下几个过程</p><ol><li>DNS解析</li><li>TCP连接</li><li>客户端发起HTTP请求</li><li>服务端接收请求，并返回对应的HTTP报文</li><li>浏览器解析报文、渲染页面</li><li>连接结束</li></ol><a id="more"></a><h2 id="具体过程"><a href="#具体过程" class="headerlink" title="具体过程"></a>具体过程</h2><h3 id="dns解析"><a href="#dns解析" class="headerlink" title="dns解析"></a>dns解析</h3><p>DNS解析的过程就是寻找哪台机器上有你需要的资源的过程。当你输入网址的时候，其实访问的是他的唯一IP地址，但是IP地址不方便记忆，因此才有了网址。DNS解析就是将网址对应到IP地址的过程。</p><h3 id="解析过程"><a href="#解析过程" class="headerlink" title="解析过程"></a>解析过程</h3><p><img src="https://segmentfault.com/img/bVDM45?w=1928&amp;h=1248" alt="https://segmentfault.com/img/bVDM45?w=1928&amp;h=1248"></p><h3 id="DNS优化"><a href="#DNS优化" class="headerlink" title="DNS优化"></a>DNS优化</h3><ol><li>DNS缓存</li><li>DNS负载均衡（也称DNS重定向）</li></ol><h3 id="TCP连接、HTTP请求"><a href="#TCP连接、HTTP请求" class="headerlink" title="TCP连接、HTTP请求"></a>TCP连接、HTTP请求</h3><p>这里包含了TCP的握手和挥手、HTTPS以及浏览器缓存<br>有关TCP、HTTP和HTTPS的知识请看我另一篇关于这部分知识的记录：<a href="http://blog.leeing.site/2018/08/07/HTTP/" target="_blank" rel="noopener">http://blog.leeing.site/2018/08/07/HTTP/</a><br>有关浏览器缓存的知识也可以看我另一篇关于这部分知识的记录：<a href="http://blog.leeing.site/2018/08/19/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5/" target="_blank" rel="noopener">http://blog.leeing.site/2018/08/19/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5/</a><br>这边就不详细介绍了。</p><h3 id="浏览器解析渲染页面"><a href="#浏览器解析渲染页面" class="headerlink" title="浏览器解析渲染页面"></a>浏览器解析渲染页面</h3><p>浏览器是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建CSSOM树，然后将两棵树合并为一棵render树，等到render树构建完成后，浏览器开始布局渲染并将其绘制到屏幕上。<br>在这个过程中，涉及到两个概念，重绘和回流。DOM中各个元素都需要浏览器去计算其位置和大小，这个过程称为回流。当这些属性都确定下来之后，浏览器便开始绘制内容，这个过程称为重绘。页面在首次加载的时候必然会经历重绘和回流。且回流必定重绘，重绘不一定回流。<br>重绘和回流是非常消耗性能的，尤其是在移动设备上，它会破坏用户体验，有时会造成页面卡顿。所以我们应该尽可能减少重绘和回流。</p><p>JS的解析是由浏览器中的JS解析引擎完成的。JS是单线程运行，但是存在一些任务特别耗时，如IO操作。因此，需要一种机制可以先执行排在后面的任务，这就是同步任务和异步任务（宏任务和微任务）。JS的执行机制就可以看做是一个主线程加一个任务队列。同步任务就是放在主线程上执行的任务，异步任务就是放在任务队列中的任务。所有的同步任务在主线程上执行，形成一个执行栈；异步任务有了运行结果就会在任务队列中添加一个事件；脚本执行时先依次运行执行栈，然后会从任务队列中提取事件，运行任务队列中的任务。这个过程不断重复，故而又称为事件循环（event loop）。</p><p>浏览器在解析的过程中，如果遇到请求外部资源时，如图片时，请求过程是异步的，并不会影响HTML文档进行加载。但是如果遇到JS文件，HTML会挂起渲染过程，不仅要等到其下载完成还要等其解析执行完毕，才会继续HTML的渲染过程。原因是JS有可能修改DOM结构。CSS的加载不影响JS文件的加载，但是影响JS文件的执行。因此JS代码执行前，浏览器必须保证CSS文件已经下载并加载完毕。这也是为什么建议CSS文件放在HEAD里，script标签包裹的JS文件放在body底部的原因。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;这是一道常见的面试题，这次，我们就来彻底搞懂他。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;首先，总的来说，分为以下几个过程&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;DNS解析&lt;/li&gt;
+&lt;li&gt;TCP连接&lt;/li&gt;
+&lt;li&gt;客户端发起HTTP请求&lt;/li&gt;
+&lt;li&gt;服务端接收请求，并返回对应的HTTP报文&lt;/li&gt;
+&lt;li&gt;浏览器解析报文、渲染页面&lt;/li&gt;
+&lt;li&gt;连接结束&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+      <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>常见的跨域技巧及其原理</title>
+    <link href="http://1eeing.github.io/2019/10/17/%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%A8%E5%9F%9F%E6%8A%80%E5%B7%A7/"/>
+    <id>http://1eeing.github.io/2019/10/17/常见的跨域技巧/</id>
+    <published>2019-10-16T16:29:24.509Z</published>
+    <updated>2019-10-16T16:30:34.104Z</updated>
+    
+    <content type="html"><![CDATA[<p>在了解怎么跨域之前，我们先要理解为什么会产生跨域。</p><h2 id="跨域产生的原因"><a href="#跨域产生的原因" class="headerlink" title="跨域产生的原因"></a>跨域产生的原因</h2><p>浏览器存在同源策略，为了安全。所谓同源是指“协议+域名+端口”三者相同，缺一不可。</p><p>同源侧滤限制的内容有：</p><ol><li>Cookie、localStorage、IndexDB等存储型内容</li><li>DOM节点</li><li>ajax请求</li></ol><a id="more"></a><p>有四个标签是允许加载跨域资源的</p><ol><li><code>&lt;img&gt;</code>标签</li><li><code>&lt;script&gt;</code>标签</li><li><code>&lt;link&gt;</code>标签</li><li><code>&lt;iframe&gt;</code>标签</li></ol><h2 id="如何解决跨域"><a href="#如何解决跨域" class="headerlink" title="如何解决跨域"></a>如何解决跨域</h2><p>在了解跨域是怎么产生了以后，我们来看看如何解决这个问题。</p><h3 id="1、jsonp"><a href="#1、jsonp" class="headerlink" title="1、jsonp"></a>1、jsonp</h3><h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>jsonp就是利用了<code>&lt;script&gt;</code>标签可以跨域请求资源的特性，将一个callback回调函数名，以形如<code>?callback=test</code>的方式拼接在请求url的<code>search</code>参数里，再通过<code>GET</code>请求传递给服务端。服务端接收到请求并处理完成后，返回一个形如<code>test(response)</code>的<code>responseBody</code>。这样，前端拿到响应结果后，就会执行test方法并拿到里面的结果。</p><h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p>前端代码实现可以在我的<a href="https://github.com/1eeing/my-functions/blob/master/src/http/jsonp.ts" target="_blank" rel="noopener">github</a>里找到。</p><h4 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h4><p>优点：兼容性好<br>缺点：仅支持<code>GET</code>方法，可能会遭受XSS攻击。</p><h3 id="2、cors"><a href="#2、cors" class="headerlink" title="2、cors"></a>2、cors</h3><p>浏览器会自动进行CORS通信，实现CORS的关键是服务端，只要服务端支持，就实现了跨域。</p><h4 id="实现流程"><a href="#实现流程" class="headerlink" title="实现流程"></a>实现流程</h4><p>服务端设置Acces-Control-Allow-Origin就可以开启CORS。该属性表示哪些域名可以访问资源，如果设置通配符，则表示所有网站都可以访问资源。</p><p>通过CORS来解决跨域的话，会在发送请求时出现两种情况，<strong>简单请求</strong>和<strong>复杂请求</strong>。</p><h4 id="简单请求"><a href="#简单请求" class="headerlink" title="简单请求"></a>简单请求</h4><p>只要同时满足以下两大条件，就属于简单请求。</p><ul><li>条件1：使用下列方法之一<ul><li>GET</li><li>HEAD</li><li>POST</li></ul></li><li>条件二：Content-Type为下面三者之一<ul><li>text/plain</li><li>multipart/form-data</li><li>application/x-www-form-urlencoded</li></ul></li></ul><h4 id="复杂请求"><a href="#复杂请求" class="headerlink" title="复杂请求"></a>复杂请求</h4><p>不符合以上条件的请求就是复杂请求。复杂请求会在正式通信之前，发送一个OPTION请求，该请求的作用是<strong>预检</strong>。通过该请求，来判断服务器是否支持跨域请求。</p><h3 id="3、postMessage"><a href="#3、postMessage" class="headerlink" title="3、postMessage"></a>3、postMessage</h3><p>关于postMessage的可以看我的另一篇文章，<a href="http://blog.leeing.site/2018/08/12/postMessage/" target="_blank" rel="noopener">《从iframe高度自适应了解postMessage》</a>，这边不再过多介绍了。</p><h3 id="4、websocket"><a href="#4、websocket" class="headerlink" title="4、websocket"></a>4、websocket</h3><p>websocket也是支持跨域的。</p><h3 id="5、服务端处理"><a href="#5、服务端处理" class="headerlink" title="5、服务端处理"></a>5、服务端处理</h3><p>同源策略是浏览器的安全策略，所以，在服务端是不存在跨域问题的。因此，我们可以通过先请求同域下的服务器，服务器帮我们去请求原本直接请求会跨域的请求，然后将结果返回给前端。</p><p>这个服务端可以有多种实现方案，<code>node</code>、<code>Nginx</code>、甚至交给你们的后端都可以。</p><h3 id="6、document-domain"><a href="#6、document-domain" class="headerlink" title="6、document.domain"></a>6、document.domain</h3><p>该方式只能用于二级域名相同的情况下，比如<code>a.test.com</code>与<code>b.test.com</code>。需要分别给两个页面添加<code>document.domain = test.com</code>，表示二级域名相同就可以实现跨域了。</p><h3 id="7、通过img标签"><a href="#7、通过img标签" class="headerlink" title="7、通过img标签"></a>7、通过img标签</h3><p>前面也提到了，<code>&lt;img&gt;</code>标签可以跨域。因此，当我们需要上报一些信息而不用关心返回结果的时候，可以使用<code>&lt;img&gt;</code>标签来跨域请求。<br>该方法类似<code>jsonp</code>，将需要访问的url和参数拼接到img标签的url中，通过GET请求该图片，就可以实现跨域请求。</p><p>具体实现也可以参考我的<a href="https://github.com/1eeing/my-functions/blob/master/src/http/imgJsonp.ts" target="_blank" rel="noopener">github</a>。</p><h4 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h4><p>优点：兼容性好<br>缺点：仅支持<code>GET</code>方法，但是因为不会用到返回值，所以遭受XSS攻击的可能性比jsonp低</p><h4 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h4><p>打点上报之类的只需要请求，不需要用到返回值的场景。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在了解怎么跨域之前，我们先要理解为什么会产生跨域。&lt;/p&gt;
+&lt;h2 id=&quot;跨域产生的原因&quot;&gt;&lt;a href=&quot;#跨域产生的原因&quot; class=&quot;headerlink&quot; title=&quot;跨域产生的原因&quot;&gt;&lt;/a&gt;跨域产生的原因&lt;/h2&gt;&lt;p&gt;浏览器存在同源策略，为了安全。所谓同源是指“协议+域名+端口”三者相同，缺一不可。&lt;/p&gt;
+&lt;p&gt;同源侧滤限制的内容有：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Cookie、localStorage、IndexDB等存储型内容&lt;/li&gt;
+&lt;li&gt;DOM节点&lt;/li&gt;
+&lt;li&gt;ajax请求&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+      <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+      <category term="安全" scheme="http://1eeing.github.io/tags/%E5%AE%89%E5%85%A8/"/>
+    
+      <category term="跨域" scheme="http://1eeing.github.io/tags/%E8%B7%A8%E5%9F%9F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>常见的网络攻击及其防范手段</title>
+    <link href="http://1eeing.github.io/2019/10/17/%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB%E5%8F%8A%E5%85%B6%E9%98%B2%E8%8C%83%E6%89%8B%E6%AE%B5/"/>
+    <id>http://1eeing.github.io/2019/10/17/常见的网络攻击及其防范手段/</id>
+    <published>2019-10-16T16:25:38.059Z</published>
+    <updated>2019-10-16T16:27:42.959Z</updated>
+    
+    <content type="html"><![CDATA[<p>前端能遇到的网络攻击，基本只包含以下两类</p><ul><li>XSS</li><li>CSRF</li></ul><p>这篇文章就整理一下常见的网络攻击及其防范手段。</p><h2 id="XSS（跨站脚本攻击）"><a href="#XSS（跨站脚本攻击）" class="headerlink" title="XSS（跨站脚本攻击）"></a>XSS（跨站脚本攻击）</h2><p>是一种网站应用程式的安全漏洞攻击，是代码注入的一种。它允许恶意使用者将程式码注入到网页上，其他使用者在观看网页时就会受到影响。这类攻击通常包含了HTML以及使用者端脚本语言。</p><a id="more"></a><p>大概有以下三种攻击方式：</p><ul><li><p>反射型<br>XSS通过修改HTML节点或者执行JS代码来攻击网站，例如通过URL获取参数的时候，将url改成一段攻击脚本</p></li><li><p>存储型<br>例如写了一篇包含攻击代码的文章，那么浏览文章的用户都会被攻击到</p></li><li><p>DOM-based<br>以上两种都可算DOM-based类型</p></li></ul><p>如何防御？</p><ul><li>转义输入输出的内容，对于引号、尖括号、斜杠进行转义</li><li>对于显示富文本来说，可以通过白名单过滤或者黑名单过滤</li><li>CSP（内容安全策略），本质上也是建立白名单，规定了浏览器只能够执行特定来源的代码<br>HTTP Header中的Content-Security-Policy可以开启CSP，值：<ul><li>default-src ‘self’ 只允许加载本站资源</li><li>img-src https://* 只允许加载HTTPS协议图片</li><li>child-src ‘none’ 允许加载任何来源框架</li><li><a href="https://content-security-policy.com/" target="_blank" rel="noopener">更多属性</a></li></ul></li></ul><h2 id="CSRF（跨站点请求伪造）"><a href="#CSRF（跨站点请求伪造）" class="headerlink" title="CSRF（跨站点请求伪造）"></a>CSRF（跨站点请求伪造）</h2><h3 id="如何攻击？"><a href="#如何攻击？" class="headerlink" title="如何攻击？"></a>如何攻击？</h3><p>假设网站中有一个通过Get请求提交用户评论的接口，那么攻击者就可以在钓鱼网站中加入一个图片，图片的地址就是评论接口<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://www.xxx.com/xxx?comment='attack'"</span> /&gt;</span></span><br></pre></td></tr></table></figure></p><p>Post提交的用表单<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://www.xxx.com/xxx"</span> <span class="attr">id</span>=<span class="string">"CSRF"</span> <span class="attr">method</span>=<span class="string">"post"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">name</span>=<span class="string">"comment"</span> <span class="attr">value</span>=<span class="string">"attack"</span> <span class="attr">type</span>=<span class="string">"hidden"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure></p><h3 id="如何防御"><a href="#如何防御" class="headerlink" title="如何防御"></a>如何防御</h3><ol><li>Get请求不对数据进行修改</li><li>不让第三方网站访问到用户Cookie</li><li>阻止第三方网站请求接口</li><li>请求时附带验证信息，比如验证码或者token</li></ol><blockquote><p>补充：</p><ul><li>SameSite 该Cookie属性可以设置Cookie不随着跨域请求发送，但是兼容性不太好</li><li>验证Referer 通过验证Referer来判断该请求是否为第三方网站发起的</li><li>Token 服务器下发一个随机Token，每次请求将Token带上，服务器验证是否有效</li></ul></blockquote><h2 id="密码安全"><a href="#密码安全" class="headerlink" title="密码安全"></a>密码安全</h2><p>密码必然不能铭文存储在数据库。并且也不建议只对密码单纯通过加密算法加密，因为存在彩虹表，可以反查出加密前的密码。因此，通常需要对密码加盐，然后进行几次不同加密算法的加密（加盐就是给原密码添加字符串，增加原密码长度）</p><p>加盐不能阻止别人盗号，但是能保证即使数据库泄露，也不会暴露用户的真实密码。但是攻击者可以通过暴力破解的方式破解密码。对于这种情况，通常使用验证码增加延时或者限制尝试次数。并且一旦用户输入了错误的密码，也不能直接提示密码错误，而应该提示账号或密码错误。</p><blockquote><p>前端加密对安全防护意义不大，但是在遇到中间人攻击的情况下，可以避免名文密码被第三方获取</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前端能遇到的网络攻击，基本只包含以下两类&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;XSS&lt;/li&gt;
+&lt;li&gt;CSRF&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这篇文章就整理一下常见的网络攻击及其防范手段。&lt;/p&gt;
+&lt;h2 id=&quot;XSS（跨站脚本攻击）&quot;&gt;&lt;a href=&quot;#XSS（跨站脚本攻击）&quot; class=&quot;headerlink&quot; title=&quot;XSS（跨站脚本攻击）&quot;&gt;&lt;/a&gt;XSS（跨站脚本攻击）&lt;/h2&gt;&lt;p&gt;是一种网站应用程式的安全漏洞攻击，是代码注入的一种。它允许恶意使用者将程式码注入到网页上，其他使用者在观看网页时就会受到影响。这类攻击通常包含了HTML以及使用者端脚本语言。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+      <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+      <category term="安全" scheme="http://1eeing.github.io/tags/%E5%AE%89%E5%85%A8/"/>
+    
+      <category term="网络攻击" scheme="http://1eeing.github.io/tags/%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>javascript垃圾回收机制</title>
+    <link href="http://1eeing.github.io/2019/10/17/javascript%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/"/>
+    <id>http://1eeing.github.io/2019/10/17/javascript垃圾回收机制/</id>
+    <published>2019-10-16T16:24:32.565Z</published>
+    <updated>2019-10-16T16:29:02.800Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="什么需要被释放？"><a href="#什么需要被释放？" class="headerlink" title="什么需要被释放？"></a>什么需要被释放？</h2><ol><li>字符串</li><li>数组</li><li>对象</li></ol><h2 id="为什么它们需要被释放？"><a href="#为什么它们需要被释放？" class="headerlink" title="为什么它们需要被释放？"></a>为什么它们需要被释放？</h2><p>因为它们没有固定大小，只有当它们大小已知的时候，才能对它们进行动态的存储方案。<br>因此JS每次创建它们时，都必须分配内存，这就是动态分配内存。<br>只要是动态分配内存的，都需要被释放。否则，JS的解释器将会消耗完系统中所有可用的内存，造成系统崩溃</p><a id="more"></a><p>例子：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="string">'before'</span></span><br><span class="line"><span class="keyword">var</span> b = <span class="string">'overwrite a'</span></span><br><span class="line"><span class="keyword">var</span> a = b</span><br></pre></td></tr></table></figure></p><p>以上这个例子中，before这个字段失去了引用，系统检测到这个事实之后，就会释放该字符串的存储空间以便这些空间可以被再利用。</p><h2 id="怎么垃圾回收？"><a href="#怎么垃圾回收？" class="headerlink" title="怎么垃圾回收？"></a>怎么垃圾回收？</h2><p><strong>1、 标记清除</strong>（todo 这个解释不是很清晰）<br>当变量进入执行环境时，就标记这个变量为“进入环境”。当变量离开环境时，则标记“离开环境”。理论上永远不会释放“进入环境”的变量，因为很可能会被用到。<br>垃圾收集器在运行的时候，会给存储在内存中的所有变量都加上标记。然后，它会去掉环境中的变量以及被环境中的变量引用的标记。在此之后，如果变量再被加上标记，则该变量将被视为准备删除的变量，因为环境中的变量已经无法访问到这些变量了。最后。垃圾收集器完成内存清除工作，销毁那些带标记的值，并回收它们所占用的内存空间。</p><p><strong>2、 引用计数（不太常见）</strong><br>引用计数的含义是，<strong>跟踪记录每个值被引用的次数</strong>。当声明了一个变量的并将一个引用类型赋值给该变量时，则这个值的引用次数就是1。相反，如果包含对这个值引用的变量被赋值成了另一个值，则这个值的引用次数就减1。当引用次数变为0时，则说明没有办法再访问这个值了，因而就可以将其所占的内存空间给收回来。这样，垃圾收集器下次再运行时，它就会释放那些引用次数为0的值所占的内存。</p><p>引用计数存在一个问题，如果两个对象相互引用了，则引用次数永远是1，不会被垃圾回收机制所回收。</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = &#123;&#125;;</span><br><span class="line"><span class="keyword">var</span> b = &#123;&#125;;</span><br><span class="line">a.someProperty = b;</span><br><span class="line">b.someProperty = a;</span><br></pre></td></tr></table></figure><p>大量这样的相互引用就会导致大量的内存泄漏。</p><p>这个问题不太好避免。例如，DOM和BOM是用C++的COM（Component Object Modal，组件对象）对象实现的，而COM对象的垃圾回收器就是采用的引用计数的策略。因此，即使Javascript的垃圾回收器是使用标记清除的策略来实现的，只要访问了COM对象，依然会存在循环引用的问题。看下这个例子。</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> elem = <span class="built_in">document</span>.getElementById(<span class="string">'element'</span>);</span><br><span class="line"><span class="keyword">var</span> obj = &#123;&#125;;</span><br><span class="line">obj.element = elem;</span><br><span class="line">elem.obj = obj;</span><br></pre></td></tr></table></figure><p>在这个例子中，一个DOM元素与一个原生JS对象之间建立了相互引用。由于相互引用，即使将elem这个DOM元素从页面中删除，内存也永远不会被回收。</p><p>我们可以手动切断循环引用来解决这个问题</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">obj.element = <span class="literal">null</span>;</span><br><span class="line">elem.obj = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure><h2 id="怎么减少垃圾内存"><a href="#怎么减少垃圾内存" class="headerlink" title="怎么减少垃圾内存"></a>怎么减少垃圾内存</h2><p><strong>1、 对象object优化</strong><br>避免使用<code>someObj = {}</code>来清空对象，因为这将会导致过多的内存创建。可以通过清空一个对象，再在此对象上添加属性的方式来达到复用对象的目的，从而节省内存。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">clearObj</span>(<span class="params">obj</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> key <span class="keyword">in</span> obj)&#123;</span><br><span class="line">    <span class="keyword">if</span>(obj.hasOwnProperty(key))&#123;</span><br><span class="line">      <span class="keyword">delete</span> obj[key];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p><strong>2、 数组array优化</strong><br>同理，避免使用<code>someArr = []</code>来清空数组，可以使用<code>someArr.length = 0</code>来清空一个数组并复用它，来达到节省内存的目的。</p><p><strong>3、 function优化</strong><br>如果一个function总是被重复创建和使用，可以用一个变量先保存它，从而达到节省内存的目的。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.func = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="built_in">Date</span>.now());</span><br><span class="line">&#125;</span><br><span class="line">setTimeout(<span class="keyword">this</span>.func, <span class="number">1000</span>);</span><br></pre></td></tr></table></figure></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;什么需要被释放？&quot;&gt;&lt;a href=&quot;#什么需要被释放？&quot; class=&quot;headerlink&quot; title=&quot;什么需要被释放？&quot;&gt;&lt;/a&gt;什么需要被释放？&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;字符串&lt;/li&gt;
+&lt;li&gt;数组&lt;/li&gt;
+&lt;li&gt;对象&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;为什么它们需要被释放？&quot;&gt;&lt;a href=&quot;#为什么它们需要被释放？&quot; class=&quot;headerlink&quot; title=&quot;为什么它们需要被释放？&quot;&gt;&lt;/a&gt;为什么它们需要被释放？&lt;/h2&gt;&lt;p&gt;因为它们没有固定大小，只有当它们大小已知的时候，才能对它们进行动态的存储方案。&lt;br&gt;因此JS每次创建它们时，都必须分配内存，这就是动态分配内存。&lt;br&gt;只要是动态分配内存的，都需要被释放。否则，JS的解释器将会消耗完系统中所有可用的内存，造成系统崩溃&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+      <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+      <category term="垃圾回收" scheme="http://1eeing.github.io/tags/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/"/>
+    
+  </entry>
   
   <entry>
     <title>《React最佳实践系列》之css篇</title>
@@ -66,9 +209,9 @@
     
       <category term="深入学习" scheme="http://1eeing.github.io/tags/%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0/"/>
     
-      <category term="React" scheme="http://1eeing.github.io/tags/React/"/>
-    
       <category term="Mobx" scheme="http://1eeing.github.io/tags/Mobx/"/>
+    
+      <category term="React" scheme="http://1eeing.github.io/tags/React/"/>
     
   </entry>
   
@@ -79,7 +222,7 @@
     <published>2019-03-07T17:50:56.573Z</published>
     <updated>2019-03-14T16:27:55.435Z</updated>
     
-    <content type="html"><![CDATA[<p><img src="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&amp;fm=26&amp;gp=0.jpg" alt="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&amp;fm=26&amp;gp=0.jpg"></p><p>首先，先让我们看一下Mobx的核心概念。</p><ol><li><p><strong>可观察状态(Observable state)。</strong><br>任何可以变异且可以作为计算值源的值都是state。Mobx可以开箱即用地使绝大多数类型的值（基本类型，数组，类，对象）变成可观察的（甚至深度观察）。</p></li><li><p><strong>计算值(Computed values)。</strong><br>任何可观察的值可以使用纯函数计算得出任何值。计算值的范围可以从简单的字符串到复杂的对象甚至dom操作上。计算值会懒惰地对状态变化做出反应。</p></li><li><p><strong>反应(Reactions)。</strong><br>反应有点类似于计算值，但是它不产生新值，而是作为桥梁衔接了响应式编程和命令式编程，产生一个副作用（I/O操作），例如打印到控制台，发送网络请求，更新dom树等。</p></li><li><p><strong>操作(Actions)。</strong><br>操作是改变状态(state)的主要手段。操作不是状态改变后的反应，是改变的来源，例如用户事件或web-socket连接，用以改变可观察的状态。</p></li></ol><a id="more"></a><blockquote><p>计算值和反应在本文章的后续中都称为衍生(derivations)。到目前为止，这听起来可能有点学术性，所以，我们让它具体点。在excel电子表格中，所有具有值的数据单元格都是可观察状态的，公式和图标是可以从数据单元格和其他公式衍生的计算值。在屏幕上绘制数据单元格或公式的结果就是一个反应(reaction)，改变数据单元格或公式就是一个操作(action)</p></blockquote><p>下面这个例子结合了Mobx和React，并且包含了以上4个概念：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  @observable firstName = <span class="string">"Michel"</span>;</span><br><span class="line">  @observable lastName = <span class="string">"Weststrate"</span>;</span><br><span class="line">  @observable nickName;</span><br><span class="line">  </span><br><span class="line">  @computed get fullName() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">" "</span> + <span class="keyword">this</span>.lastName;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> michel = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Reaction: log the profile info whenever it changes</span></span><br><span class="line">autorun(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(person.nickName ? person.nickName : person.fullName));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Example React component that observes state</span></span><br><span class="line"><span class="keyword">const</span> profileView = observer(<span class="function"><span class="params">props</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (props.person.nickName)</span><br><span class="line">    <span class="keyword">return</span> &lt;div&gt;&#123;props.person.nickName&#125;&lt;/div&gt;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> &lt;div&gt;&#123;props.person.fullName&#125;&lt;/div&gt;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Action:</span></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> michel.nickName = <span class="string">"mweststrate"</span>, <span class="number">5000</span>)</span><br><span class="line"></span><br><span class="line">React.render(React.createElement(profileView, &#123; <span class="attr">person</span>: michel &#125;), <span class="built_in">document</span>.body);</span><br><span class="line"><span class="comment">// This snippet is runnable in jsfiddle: https://jsfiddle.net/mweststrate/049r6jox/</span></span><br><span class="line">view rawprofile.jsx hosted <span class="keyword">with</span> ❤ by GitHub</span><br></pre></td></tr></table></figure><p>我们可以画一张依赖图：</p><p><img src="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png" alt="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png"><br>Figure 1：profileView组件的依赖关系树。fullName处于reactive mode，主动观察firstName和lastName</p><p>这个应用中，状态由可观察状态捕获（蓝色图标）。绿色的fullName是计算值，由可观察状态firstName和lastName自动衍生得出。同样，profileView由nickName和fullName衍生得出。profileView将通过产生副作用来响应状态更改——它更新React组件树。</p><p>当使用Mobx时，依赖关系树被最低限度定义。举个例子，一旦profileView的有了nickName，且渲染不再受fullName的值的影响，也不受firstName和lastName的影响，那么他们之间所有的观察者关系将被清除，Mobx将自动的简化依赖树，如下图：</p><p><img src="https://cdn-images-1.medium.com/max/1600/1*SXiDJ_mQ0ctEj2QEurLpqA.png" alt="https://cdn-images-1.medium.com/max/1600/1*SXiDJ_mQ0ctEj2QEurLpqA.png"><br>Figure 2：当profileView具有nickName时的依赖关系树，与Figure 1相反，fullName现在处于lazy mode，且不再观察firstName和lastName</p><p>Mobx总是使用最小化计算次数去产生状态。接下来，我将介绍用于实现此目标的几种策略，但在深入了解计算值和反应如何与状态同步之前，让我们首先描述Mobx背后的原理：</p><p><strong>对状态变化做出反应总是比对状态变化做出动作要好。（Reacting to state changes is always better then acting on state changes.）</strong></p><p>应用程序响应状态更改的必要操作是通常会创建或更新一些值，大多数的操作(actions)管理着本地缓存。dom更新、批量更新值、请求后端，这些都可以被认为变相地使缓存失效。要确保这些缓存保持同步，你需要订阅(subscribe)未来的状态更改，以便再次触发你的操作。</p><p>但是观察者模式有一个基本的问题：当你的应用变大时，你可能会犯错，比如依然订阅不再使用的值或忘记订阅一些值。</p><p>像flux风格的订阅很容易出现这种超额订阅的情况。使用React时，你可以通过在渲染中打印来判断你的组件是否被超额订阅了。Mobx会将打印出的超额订阅数减少到0。这个想法很简单但违反直觉：订阅越多，重新计算越少。Mobx为你管理数千个观察者，你可以有效地权衡内存的CPU周期。</p><p>超额订阅也以非常微妙的形式存在。如果你订阅了使用的数据，但并未在所有条件下订阅，那么你依然需要超额订阅。例如，如果profileView组件订阅了fullName，并且profileView有nickName，这就将超额订阅。因此Mobx设计背后的一个重要原则是：</p><p><strong>在运行时才能实现最小、一致地订阅子集（A minimal, consistent set of subscriptions can only be achieved if subscriptions are determined at run-time）。</strong></p><p>Mobx背后的第二个重要思想是，对于任何比TodoMVC更复杂的应用程序，通常需要一个数据图而不是规范化的树，以一种最佳方式存储状态。数据图可以实现参照一致性并避免数据重复，从而保证衍生值永远不会过时。</p><p><strong>Mobx如何有效地将所有衍生保持在一个一致地状态？</strong></p><p>答案是：不缓存，只有在需要时再重新计算衍生。这不是很昂贵吗？Mobx认为不是，反而这是很高效地。原因是Mobx不会运行所有衍生，但确保参与reaction的computed values与可观察状态保持同步。这些衍生被称为响应式的。再次以excel举例：只有当那些被观察着的当前可见或被间接使用的公式发生变化时，才会去重新计算值。</p><p><strong>Lazy versus reactive evaluation</strong></p><p>那么反应没有直接或间接使用的计算呢？你依然可以随时检查计算值的值，如fullName。答案是简单的：如果一个计算不是reactive的，它将被按需处理。就像一个普通的getter函数一样。懒衍生如果没有用了，将被简单的垃圾回收。记住computed values总是需要使用纯函数，因为对于纯函数而言，它是懒衍生还是直接使用并不重要。在相同的可观察状态下，computed values总是给出相同的结果。</p><p><strong>运行计算</strong></p><p>Reaction和Computed values在Mobx中都以相同的方式运行。当重新计算被触发时，该函数将被压入到衍生堆栈中。只要计算正在运行，每个被访问的observable都会将自身注册为衍生堆栈最顶层函数的依赖项。当computed value被需要了，如果该值处于reactive状态，则该值可以简单的是最后已知的值。否则它将push自己到衍生堆栈中，切换到reactive模式并开始计算。</p><p><img src="https://cdn-images-1.medium.com/max/800/1*Pb3Wd14BlXPgqylBN_y-hQ.png" alt="https://cdn-images-1.medium.com/max/800/1*Pb3Wd14BlXPgqylBN_y-hQ.png"><br>Figure 4：profileView执行期间，一些observable state和computed values被观察着。computed values可能重新计算，这会产生依赖关系树，如Figure 1所示。</p><p>当一个计算完成后，将得到在执行期间访问的可观察列表。在profileView的例子中，这个list将只包含nickName或nickName和fullName属性。任何被移除的属性都将不再观察（此时computed values可能会从反应模式返回到惰性模式），任何被添加的可观察属性将被观察，直到下一次计算。例如，将来将更改firstName的值，fullName将会知道自己该被重新计算，从而profileView会重新计算。接下来会详细解释这一过程。</p><p><strong>传播状态变化</strong></p><p><img src="https://cdn-images-1.medium.com/max/800/1*Et95GdR7OeOofl_V0Od4iA.png" alt="https://cdn-images-1.medium.com/max/800/1*Et95GdR7OeOofl_V0Od4iA.png"></p><p>Figure 5：更改值1对依赖关系树的影响。虚线表示将被标记为旧的观察者。数字表示计算的顺序。</p><p>衍生将自动对状态变化做出反应。所有反应同步发生，更重要的是无瑕疵。修改可观察值时，将执行以下算法：</p><ol><li><p>可观察值向所有观察者发送过时通知，表明它已变得陈旧。任何受影响的computed values将以递归方式将通知传递给其观察者。因此，依赖关系树的一部分将被标记为陈旧。以Figure 5为例，当值1改变时观察者将变成陈旧的，并用橘色虚线标记。所有的衍生都可能被变化的值影响。</p></li><li><p>在发送陈旧通知并且存储新值之后，一个就绪通知将被发送。用于指示该值是否确实发生了变化。</p></li><li><p>一旦衍生收到步骤1中收到的每个陈旧通知的就绪通知，它就会知道所有的被观察值都稳定了，于是将开始重新计算。计算 就绪/陈旧 消息的数量将确保这一点。例如，计算值4将仅在计算值3变得稳定后重新计算。</p></li><li><p>如果没有就绪消息指出一个值变化了，衍生将直接告诉自己的观察者它已经准备好了且没有变化中的值，否则将重新计算并发送一个就绪消息给自己的观察者。执行顺序如Figure 5所示。注意，如果计算值4重新评估但没有产生新值，则最后一个“-”将永远不会执行。</p></li></ol><p>前两段总结了如何在运行时跟踪可观察值和衍生之间的依赖关系以及变化在衍生中是如何传播的。此时你会发现reaction基本上就是一个始终处于反应模式的computed value。<strong>重点：这个算法可以非常有效地实现而不需要闭包，只需要一堆指针数组。</strong>另外，Mobx还应用了许多其他优化，这些优化超出了本文的范围。</p><p><strong>同步执行</strong></p><p>人们常惊讶于Mobx同步运行所有内容。这有两大好处：第一点是不可能观察陈旧的衍生。因此，在更改影响它的值后，可以立即使用衍生值。第二点是这让追踪堆栈和调试变得简单，它避免了Promise/Async库所特有的无用堆栈跟踪。</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">transaction(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  michel.firstName = <span class="string">"Mich"</span>;</span><br><span class="line">  michel.lastName = <span class="string">"W."</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><p>(事务示例，它确保没有人能追踪到像Michaaa这样的中间值)</p><p>同步执行还引入了对事务的需求。如果立即连续应用几个突变，在应用所有更改后，最好重新评估所有衍生。在transaction中包装action能实现这个目的。事务推迟所有就绪通知，直到事务块执行完成。请注意，事务仍然同步运行和更新所有内容。</p><p>这总结了Mobx最基本的实现细节。这没有涵盖所有内容，但是很高兴你可以组合你的computed value了。通过组合reactive computations，甚至可以自动的将一张数据图转换为另一张数据图并用最少的补丁数保持最新的衍生，这使得实现复杂模式变得简单。</p><p><strong>总结</strong></p><ol><li><p>复杂应用程序的状态最好用图表表示，以实现参考一致性，更接近问题核心的心理模型。</p></li><li><p>不应该使用手动定义的订阅或游标来强制更改状态，这将不可避免的导致由于订阅不足或超额订阅导致的错误。</p></li><li><p>使用运行时分析来确定最小的observer-&gt;observable的关系，这导致了一种计算模型，可以保证在没有观察过期值的情况下运行最小量的衍生。</p></li><li><p>任何不需要实现有效副作用的衍生都可以完全优化。</p></li></ol><p><strong>原文地址</strong><br><a href="https://hackernoon.com/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254" target="_blank" rel="noopener">https://hackernoon.com/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254</a></p>]]></content>
+    <content type="html"><![CDATA[<p><img src="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&amp;fm=26&amp;gp=0.jpg" alt="http://img0.imgtn.bdimg.com/it/u=1114646324,2521366840&amp;fm=26&amp;gp=0.jpg"></p><p>首先，先让我们看一下Mobx的核心概念。</p><ol><li><p><strong>可观察状态(Observable state)。</strong><br>任何可以变异且可以作为计算值源的值都是state。Mobx可以开箱即用地使绝大多数类型的值（基本类型，数组，类，对象）变成可观察的（甚至深度观察）。</p></li><li><p><strong>计算值(Computed values)。</strong><br>任何可观察的值可以使用纯函数计算得出任何值。计算值的范围可以从简单的字符串到复杂的对象甚至dom操作上。计算值会懒惰地对状态变化做出反应。</p></li><li><p><strong>反应(Reactions)。</strong><br>反应有点类似于计算值，但是它不产生新值，而是作为桥梁衔接了响应式编程和命令式编程，产生一个副作用（I/O操作），例如打印到控制台，发送网络请求，更新dom树等。</p></li><li><p><strong>操作(Actions)。</strong><br>操作是改变状态(state)的主要手段。操作不是状态改变后的反应，是改变的来源，例如用户事件或web-socket连接，用以改变可观察的状态。</p></li></ol><a id="more"></a><blockquote><p>计算值和反应在本文章的后续中都称为衍生(derivations)。到目前为止，这听起来可能有点学术性，所以，我们让它具体点。在excel电子表格中，所有具有值的数据单元格都是可观察状态的，公式和图标是可以从数据单元格和其他公式衍生的计算值。在屏幕上绘制数据单元格或公式的结果就是一个反应(reaction)，改变数据单元格或公式就是一个操作(action)</p></blockquote><p>下面这个例子结合了Mobx和React，并且包含了以上4个概念：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">  @observable firstName = <span class="string">"Michel"</span>;</span><br><span class="line">  @observable lastName = <span class="string">"Weststrate"</span>;</span><br><span class="line">  @observable nickName;</span><br><span class="line">  </span><br><span class="line">  @computed get fullName() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">" "</span> + <span class="keyword">this</span>.lastName;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> michel = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Reaction: log the profile info whenever it changes</span></span><br><span class="line">autorun(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(person.nickName ? person.nickName : person.fullName));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Example React component that observes state</span></span><br><span class="line"><span class="keyword">const</span> profileView = observer(<span class="function"><span class="params">props</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (props.person.nickName)</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;props.person.nickName&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;props.person.fullName&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Action:</span></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> michel.nickName = <span class="string">"mweststrate"</span>, <span class="number">5000</span>)</span><br><span class="line"></span><br><span class="line">React.render(React.createElement(profileView, &#123; <span class="attr">person</span>: michel &#125;), <span class="built_in">document</span>.body);</span><br><span class="line"><span class="comment">// This snippet is runnable in jsfiddle: https://jsfiddle.net/mweststrate/049r6jox/</span></span><br><span class="line">view rawprofile.jsx hosted <span class="keyword">with</span> ❤ by GitHub</span><br></pre></td></tr></table></figure><p>我们可以画一张依赖图：</p><p><img src="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png" alt="https://cdn-images-1.medium.com/max/1600/1*YPlKuWsPrVbhxUN7YhyTpg.png"><br>Figure 1：profileView组件的依赖关系树。fullName处于reactive mode，主动观察firstName和lastName</p><p>这个应用中，状态由可观察状态捕获（蓝色图标）。绿色的fullName是计算值，由可观察状态firstName和lastName自动衍生得出。同样，profileView由nickName和fullName衍生得出。profileView将通过产生副作用来响应状态更改——它更新React组件树。</p><p>当使用Mobx时，依赖关系树被最低限度定义。举个例子，一旦profileView的有了nickName，且渲染不再受fullName的值的影响，也不受firstName和lastName的影响，那么他们之间所有的观察者关系将被清除，Mobx将自动的简化依赖树，如下图：</p><p><img src="https://cdn-images-1.medium.com/max/1600/1*SXiDJ_mQ0ctEj2QEurLpqA.png" alt="https://cdn-images-1.medium.com/max/1600/1*SXiDJ_mQ0ctEj2QEurLpqA.png"><br>Figure 2：当profileView具有nickName时的依赖关系树，与Figure 1相反，fullName现在处于lazy mode，且不再观察firstName和lastName</p><p>Mobx总是使用最小化计算次数去产生状态。接下来，我将介绍用于实现此目标的几种策略，但在深入了解计算值和反应如何与状态同步之前，让我们首先描述Mobx背后的原理：</p><p><strong>对状态变化做出反应总是比对状态变化做出动作要好。（Reacting to state changes is always better then acting on state changes.）</strong></p><p>应用程序响应状态更改的必要操作是通常会创建或更新一些值，大多数的操作(actions)管理着本地缓存。dom更新、批量更新值、请求后端，这些都可以被认为变相地使缓存失效。要确保这些缓存保持同步，你需要订阅(subscribe)未来的状态更改，以便再次触发你的操作。</p><p>但是观察者模式有一个基本的问题：当你的应用变大时，你可能会犯错，比如依然订阅不再使用的值或忘记订阅一些值。</p><p>像flux风格的订阅很容易出现这种超额订阅的情况。使用React时，你可以通过在渲染中打印来判断你的组件是否被超额订阅了。Mobx会将打印出的超额订阅数减少到0。这个想法很简单但违反直觉：订阅越多，重新计算越少。Mobx为你管理数千个观察者，你可以有效地权衡内存的CPU周期。</p><p>超额订阅也以非常微妙的形式存在。如果你订阅了使用的数据，但并未在所有条件下订阅，那么你依然需要超额订阅。例如，如果profileView组件订阅了fullName，并且profileView有nickName，这就将超额订阅。因此Mobx设计背后的一个重要原则是：</p><p><strong>在运行时才能实现最小、一致地订阅子集（A minimal, consistent set of subscriptions can only be achieved if subscriptions are determined at run-time）。</strong></p><p>Mobx背后的第二个重要思想是，对于任何比TodoMVC更复杂的应用程序，通常需要一个数据图而不是规范化的树，以一种最佳方式存储状态。数据图可以实现参照一致性并避免数据重复，从而保证衍生值永远不会过时。</p><p><strong>Mobx如何有效地将所有衍生保持在一个一致地状态？</strong></p><p>答案是：不缓存，只有在需要时再重新计算衍生。这不是很昂贵吗？Mobx认为不是，反而这是很高效地。原因是Mobx不会运行所有衍生，但确保参与reaction的computed values与可观察状态保持同步。这些衍生被称为响应式的。再次以excel举例：只有当那些被观察着的当前可见或被间接使用的公式发生变化时，才会去重新计算值。</p><p><strong>Lazy versus reactive evaluation</strong></p><p>那么反应没有直接或间接使用的计算呢？你依然可以随时检查计算值的值，如fullName。答案是简单的：如果一个计算不是reactive的，它将被按需处理。就像一个普通的getter函数一样。懒衍生如果没有用了，将被简单的垃圾回收。记住computed values总是需要使用纯函数，因为对于纯函数而言，它是懒衍生还是直接使用并不重要。在相同的可观察状态下，computed values总是给出相同的结果。</p><p><strong>运行计算</strong></p><p>Reaction和Computed values在Mobx中都以相同的方式运行。当重新计算被触发时，该函数将被压入到衍生堆栈中。只要计算正在运行，每个被访问的observable都会将自身注册为衍生堆栈最顶层函数的依赖项。当computed value被需要了，如果该值处于reactive状态，则该值可以简单的是最后已知的值。否则它将push自己到衍生堆栈中，切换到reactive模式并开始计算。</p><p><img src="https://cdn-images-1.medium.com/max/800/1*Pb3Wd14BlXPgqylBN_y-hQ.png" alt="https://cdn-images-1.medium.com/max/800/1*Pb3Wd14BlXPgqylBN_y-hQ.png"><br>Figure 4：profileView执行期间，一些observable state和computed values被观察着。computed values可能重新计算，这会产生依赖关系树，如Figure 1所示。</p><p>当一个计算完成后，将得到在执行期间访问的可观察列表。在profileView的例子中，这个list将只包含nickName或nickName和fullName属性。任何被移除的属性都将不再观察（此时computed values可能会从反应模式返回到惰性模式），任何被添加的可观察属性将被观察，直到下一次计算。例如，将来将更改firstName的值，fullName将会知道自己该被重新计算，从而profileView会重新计算。接下来会详细解释这一过程。</p><p><strong>传播状态变化</strong></p><p><img src="https://cdn-images-1.medium.com/max/800/1*Et95GdR7OeOofl_V0Od4iA.png" alt="https://cdn-images-1.medium.com/max/800/1*Et95GdR7OeOofl_V0Od4iA.png"></p><p>Figure 5：更改值1对依赖关系树的影响。虚线表示将被标记为旧的观察者。数字表示计算的顺序。</p><p>衍生将自动对状态变化做出反应。所有反应同步发生，更重要的是无瑕疵。修改可观察值时，将执行以下算法：</p><ol><li><p>可观察值向所有观察者发送过时通知，表明它已变得陈旧。任何受影响的computed values将以递归方式将通知传递给其观察者。因此，依赖关系树的一部分将被标记为陈旧。以Figure 5为例，当值1改变时观察者将变成陈旧的，并用橘色虚线标记。所有的衍生都可能被变化的值影响。</p></li><li><p>在发送陈旧通知并且存储新值之后，一个就绪通知将被发送。用于指示该值是否确实发生了变化。</p></li><li><p>一旦衍生收到步骤1中收到的每个陈旧通知的就绪通知，它就会知道所有的被观察值都稳定了，于是将开始重新计算。计算 就绪/陈旧 消息的数量将确保这一点。例如，计算值4将仅在计算值3变得稳定后重新计算。</p></li><li><p>如果没有就绪消息指出一个值变化了，衍生将直接告诉自己的观察者它已经准备好了且没有变化中的值，否则将重新计算并发送一个就绪消息给自己的观察者。执行顺序如Figure 5所示。注意，如果计算值4重新评估但没有产生新值，则最后一个“-”将永远不会执行。</p></li></ol><p>前两段总结了如何在运行时跟踪可观察值和衍生之间的依赖关系以及变化在衍生中是如何传播的。此时你会发现reaction基本上就是一个始终处于反应模式的computed value。<strong>重点：这个算法可以非常有效地实现而不需要闭包，只需要一堆指针数组。</strong>另外，Mobx还应用了许多其他优化，这些优化超出了本文的范围。</p><p><strong>同步执行</strong></p><p>人们常惊讶于Mobx同步运行所有内容。这有两大好处：第一点是不可能观察陈旧的衍生。因此，在更改影响它的值后，可以立即使用衍生值。第二点是这让追踪堆栈和调试变得简单，它避免了Promise/Async库所特有的无用堆栈跟踪。</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">transaction(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  michel.firstName = <span class="string">"Mich"</span>;</span><br><span class="line">  michel.lastName = <span class="string">"W."</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><p>(事务示例，它确保没有人能追踪到像Michaaa这样的中间值)</p><p>同步执行还引入了对事务的需求。如果立即连续应用几个突变，在应用所有更改后，最好重新评估所有衍生。在transaction中包装action能实现这个目的。事务推迟所有就绪通知，直到事务块执行完成。请注意，事务仍然同步运行和更新所有内容。</p><p>这总结了Mobx最基本的实现细节。这没有涵盖所有内容，但是很高兴你可以组合你的computed value了。通过组合reactive computations，甚至可以自动的将一张数据图转换为另一张数据图并用最少的补丁数保持最新的衍生，这使得实现复杂模式变得简单。</p><p><strong>总结</strong></p><ol><li><p>复杂应用程序的状态最好用图表表示，以实现参考一致性，更接近问题核心的心理模型。</p></li><li><p>不应该使用手动定义的订阅或游标来强制更改状态，这将不可避免的导致由于订阅不足或超额订阅导致的错误。</p></li><li><p>使用运行时分析来确定最小的observer-&gt;observable的关系，这导致了一种计算模型，可以保证在没有观察过期值的情况下运行最小量的衍生。</p></li><li><p>任何不需要实现有效副作用的衍生都可以完全优化。</p></li></ol><p><strong>原文地址</strong><br><a href="https://hackernoon.com/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254" target="_blank" rel="noopener">https://hackernoon.com/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254</a></p>]]></content>
     
     <summary type="html">
     
@@ -101,9 +244,9 @@
       <category term="译文" scheme="http://1eeing.github.io/categories/%E8%AF%91%E6%96%87/"/>
     
     
-      <category term="React" scheme="http://1eeing.github.io/tags/React/"/>
-    
       <category term="Mobx" scheme="http://1eeing.github.io/tags/Mobx/"/>
+    
+      <category term="React" scheme="http://1eeing.github.io/tags/React/"/>
     
       <category term="译文" scheme="http://1eeing.github.io/tags/%E8%AF%91%E6%96%87/"/>
     
@@ -260,11 +403,11 @@
       <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
       <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
       <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
       <category term="网络" scheme="http://1eeing.github.io/tags/%E7%BD%91%E7%BB%9C/"/>
     
@@ -321,11 +464,11 @@
       <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
       <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
       <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
       <category term="算法" scheme="http://1eeing.github.io/tags/%E7%AE%97%E6%B3%95/"/>
     
@@ -362,13 +505,13 @@
       <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
       <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
       <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
     
       <category term="浏览器" scheme="http://1eeing.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
       <category term="缓存策略" scheme="http://1eeing.github.io/tags/%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5/"/>
     
@@ -401,11 +544,11 @@
       <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
       <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
       <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
       <category term="算法" scheme="http://1eeing.github.io/tags/%E7%AE%97%E6%B3%95/"/>
     
@@ -435,11 +578,11 @@
       <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
       <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
       <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
       <category term="算法" scheme="http://1eeing.github.io/tags/%E7%AE%97%E6%B3%95/"/>
     
@@ -500,11 +643,11 @@
       <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
       <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
       <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
       <category term="数据结构" scheme="http://1eeing.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
@@ -539,11 +682,11 @@
       <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
       <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
       <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
+    
+      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
       <category term="网络" scheme="http://1eeing.github.io/tags/%E7%BD%91%E7%BB%9C/"/>
     
@@ -554,122 +697,6 @@
       <category term="HTTP 2.0" scheme="http://1eeing.github.io/tags/HTTP-2-0/"/>
     
       <category term="DNS" scheme="http://1eeing.github.io/tags/DNS/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>【浏览器篇】浏览器中的Event Loop</title>
-    <link href="http://1eeing.github.io/2018/08/07/eventLoop/"/>
-    <id>http://1eeing.github.io/2018/08/07/eventLoop/</id>
-    <published>2018-08-07T10:14:56.000Z</published>
-    <updated>2018-08-07T10:14:56.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>在讲Event loop之前，我们先思考一个问题</p><h2 id="js为什么是单线程？"><a href="#js为什么是单线程？" class="headerlink" title="js为什么是单线程？"></a>js为什么是单线程？</h2><p>原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题</p><p>好了，接下来我们开始讲Event loop</p><blockquote><p>简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种Task）队列中。一旦执行栈为空，Event Loop就会从Task队列中拿出需要执行的代码并放入执行栈中执行，所以本质上来说，js中的异步行为还是同步的。</p></blockquote><a id="more"></a><p>我们看下以下代码，以下代码输出’1’, ‘3’, ‘2’<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'1'</span>);</span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'2'</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'3'</span>);</span><br><span class="line"><span class="comment">//'1'</span></span><br><span class="line"><span class="comment">//'3'</span></span><br><span class="line"><span class="comment">//'2'</span></span><br></pre></td></tr></table></figure></p><p>之前对setTimeout理解有偏差，虽然设置了为0，其实还是异步，是因为html5标准规定这个函数的第二个参数不得小于4ms，不足会自动增加。</p><h2 id="Task队列分为两种"><a href="#Task队列分为两种" class="headerlink" title="Task队列分为两种"></a>Task队列分为两种</h2><ul><li><p>微任务microtask，es6中称为jobs。以下这些行为属于微任务</p><ul><li>process.nextTick</li><li>promise</li><li>Object.observe</li><li>MutationObserver</li></ul></li><li><p>宏任务macrotask，es6中称为task。以下这些行为属于宏任务</p><ul><li>script</li><li>setTimeout</li><li>setInterval</li><li>setImmediate</li><li>I/O</li><li>UI rendering</li></ul></li></ul><blockquote><p>误区：很多人认为微任务快于宏任务，其实是错误的。因为宏任务汇中包括了script，浏览器会先执行一个宏任务，接下来有异步代码的话就先执行微任务。</p></blockquote><p>正确的一次Event loop顺序应该是这样的：</p><ol><li>执行同步代码（这属于宏任务）</li><li>执行栈为空，查询是否有微任务需要执行</li><li>执行所有微任务</li><li>必要的话渲染UI</li><li>开始下一轮Event loop，执行宏任务中的异步代码</li></ol><p>通过上述的Event loop顺序可知，如果宏任务中的异步代码有大量的计算并且需要操作DOM的话，为了更快的界面响应，我们可以把操作DOM放入微任务中。</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在讲Event loop之前，我们先思考一个问题&lt;/p&gt;
-&lt;h2 id=&quot;js为什么是单线程？&quot;&gt;&lt;a href=&quot;#js为什么是单线程？&quot; class=&quot;headerlink&quot; title=&quot;js为什么是单线程？&quot;&gt;&lt;/a&gt;js为什么是单线程？&lt;/h2&gt;&lt;p&gt;原因可能是如果js是多线程，在多个线程中处理DOM就可能会发生问题（一个线程添加新节点，另一个线程中删除节点），当然可以引入读写锁解决这个问题&lt;/p&gt;
-&lt;p&gt;好了，接下来我们开始讲Event loop&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;简单的说，就是js在执行的过程中会产生执行环境，这些执行环境会被顺序的加入到执行栈中。如果遇到异步的代码，会被挂起并加入到Task（有多种Task）队列中。一旦执行栈为空，Event Loop就会从Task队列中拿出需要执行的代码并放入执行栈中执行，所以本质上来说，js中的异步行为还是同步的。&lt;/p&gt;
-&lt;/blockquote&gt;
-    
-    </summary>
-    
-      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-      <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
-    
-      <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
-    
-      <category term="浏览器" scheme="http://1eeing.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
-    
-      <category term="Event loop" scheme="http://1eeing.github.io/tags/Event-loop/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>【React篇】分析diff算法</title>
-    <link href="http://1eeing.github.io/2018/08/07/ReactDiff/"/>
-    <id>http://1eeing.github.io/2018/08/07/ReactDiff/</id>
-    <published>2018-08-07T10:14:33.000Z</published>
-    <updated>2018-08-07T10:14:33.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。</p></blockquote><h1 id="传统的diff算法"><a href="#传统的diff算法" class="headerlink" title="传统的diff算法"></a>传统的diff算法</h1><p>diff算法，即微分算法。计算一颗树形结构转换成另一颗树形结构的最少操作，是一个复杂且值得研究的问题。传统diff算法通过循环递归对节点进行依次对比，效率低下，算法复杂度达到O(n^3)，其中n是树中节点的总数。这意味着如果要展示1000个节点，就要依次执行上十亿次的比较。这种指数型的性能消耗对于前端渲染场景来说太可怕了！</p><h1 id="react中的diff算法"><a href="#react中的diff算法" class="headerlink" title="react中的diff算法"></a>react中的diff算法</h1><h3 id="diff策略"><a href="#diff策略" class="headerlink" title="diff策略"></a>diff策略</h3><p>首先，我们需要知道react的diff算法有3个策略</p><ol><li>WebUI中DOM节点跨层级的移动操作特别少，可以忽略不计</li><li>拥有相同类的两个组件将会生成相似的树形结构，拥有不同类的两个组件将会生成不同的属性结构</li><li>对于同一层级的一组子节点，它们可以通过唯一id进行区分</li></ol><a id="more"></a><h3 id="tree-diff"><a href="#tree-diff" class="headerlink" title="tree diff"></a>tree diff</h3><p>基于策略一，React对树的算法进行了简洁明了的优化，即对树进行分层比较，两棵树只会对同一层级进行比较。当发现节点不存在时，测该节点及其子节点会全部被删掉，不会进行进一步的比较。</p><blockquote><p>如果出现了节点跨层级的移动，diff会有怎样的表现呢？</p></blockquote><p>假设有A、B两个父节点，a、b两个子节点，形如A-&gt;a,B-&gt;b，当a从A之下移动到A、B平级时，当A发现a不在了，则会删除a及a的子节点，当A、B这一层级发现多出了a时，则会创建一个a。</p><h4 id="这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。"><a href="#这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。" class="headerlink" title="这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。"></a>这是一种影响react性能的操作，因此官方建议不要进行dom节点跨层级的操作。</h4><h3 id="component-diff"><a href="#component-diff" class="headerlink" title="component diff"></a>component diff</h3><p>react是基于组件构建应用的，对于组件间的比较所采取的策略也是非常简洁、高效的。</p><ol><li>如果是同一类型的组件，按照原策略继续比较Virtual Dom树即可</li><li>如果不是，则将该组件判断为dirty component，从而替换整个组件下的所有子节点。</li><li>对于同一类型的组件，有可能其Virtual Dom没有任何变化，如果能够确切的知道这点，那么就可以节省大量的diff运算时间。因此react提供shouldComponentUpdate()来判断该组件是否需要进行diff算法分析。</li></ol><blockquote><p>这里存在一个问题，如果有一个组件D，下面有E、F两个子节点，当D变为G时，虽然子节点依然是E、F，但react会认为它是不同类型的组件，会直接删除D，重新创建G，尽管D和G结构相似。这时虽然diff会影响性能，但正如diff策略二所言：不同类型的组件很少存在相似dom树的情况，因此这种极端因素很难在实际开发过程中造成重大的影响。</p></blockquote><h3 id="element-diff"><a href="#element-diff" class="headerlink" title="element diff"></a>element diff</h3><p>当节点处于同一层级时，diff提供了3种节点操作。</p><ul><li>增 INSERT_MARKUP</li><li>删 REMOVE_NODE</li><li>移 MOVE_EXISTING</li></ul><p>增和删比较好理解，这里不再赘述了，这里主要讲一下“移”。<br>按照diff策略三，我们在同一层级的节点上加入了唯一id，以下简称key。</p><ul><li>当没有添加key时，移是比较蛋疼的，假设有一组旧节点A、B、C、D和一组新节点B、A、D、C，此时diff发现 B!=A，则创建并插入B至新集合，删除旧集合A，以此类推，创建并插入A、D、C，删除B、C、D。这怎么玩？</li><li>当有了key之后，那就愉快多了。依然是上述的两组新旧节点，此时diff通过key发现新旧集合中的节点都是相同的节点，因此无需进行节点删除和创建，只需要将旧集合中节点的位置进行移动即可。</li></ul><h4 id="那么具体是怎么移动的呢？"><a href="#那么具体是怎么移动的呢？" class="headerlink" title="那么具体是怎么移动的呢？"></a>那么具体是怎么移动的呢？</h4><p>依然是上述的A、B、C、D和B、A、D、C。首先对新集合中的节点进行遍历，通过key判断新旧集合中是否存在相同的节点，如果存在，则移动。但在移动之前需要将当前节点在旧集合中的位置oldIndex与lastIndex进行比较，如果lastIndex &gt; oldIndex，则进行移动。</p><p>以A为例，在新集合中，发现A的lastIndex = 1，旧集合中oldIndex = 0，此时lastIndex &gt; oldIndex，则将A进行移动，并将lastIndex更新为新集合中A的位置。A.oldIndex此时为1。进入下一个节点的判断……</p><h3 id="react中diff的不足与待优化的点？"><a href="#react中diff的不足与待优化的点？" class="headerlink" title="react中diff的不足与待优化的点？"></a>react中diff的不足与待优化的点？</h3><p>如果A、B、C、D更新为D、A、B、C，理论上只要移动D即可，然而由于D在就集合中的位置是最大的，导致实际是A、B、C移动到D之后。因此建议在开发过程中，尽量减少类似将最后一个节点移动到列表首部的操作，当节点数量过大或更新操作过于频繁时，这在一定程度上会影响react的渲染性能。</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;diff算法大家都耳熟能详，React中最值得称道的部分莫过于Virtual DOM与diff的完美结合，特别是其高效的diff算法，可以让用户无需顾忌性能问题而“任性自由”地刷新页面。因为diff会帮助我们计算出Virtual DOM中真正变化的部分，并只针对该部分进行原生DOM操作，而非重新渲染整个页面，从而保证了每次操作更新后页面的高效渲染。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;传统的diff算法&quot;&gt;&lt;a href=&quot;#传统的diff算法&quot; class=&quot;headerlink&quot; title=&quot;传统的diff算法&quot;&gt;&lt;/a&gt;传统的diff算法&lt;/h1&gt;&lt;p&gt;diff算法，即微分算法。计算一颗树形结构转换成另一颗树形结构的最少操作，是一个复杂且值得研究的问题。传统diff算法通过循环递归对节点进行依次对比，效率低下，算法复杂度达到O(n^3)，其中n是树中节点的总数。这意味着如果要展示1000个节点，就要依次执行上十亿次的比较。这种指数型的性能消耗对于前端渲染场景来说太可怕了！&lt;/p&gt;
-&lt;h1 id=&quot;react中的diff算法&quot;&gt;&lt;a href=&quot;#react中的diff算法&quot; class=&quot;headerlink&quot; title=&quot;react中的diff算法&quot;&gt;&lt;/a&gt;react中的diff算法&lt;/h1&gt;&lt;h3 id=&quot;diff策略&quot;&gt;&lt;a href=&quot;#diff策略&quot; class=&quot;headerlink&quot; title=&quot;diff策略&quot;&gt;&lt;/a&gt;diff策略&lt;/h3&gt;&lt;p&gt;首先，我们需要知道react的diff算法有3个策略&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;WebUI中DOM节点跨层级的移动操作特别少，可以忽略不计&lt;/li&gt;
-&lt;li&gt;拥有相同类的两个组件将会生成相似的树形结构，拥有不同类的两个组件将会生成不同的属性结构&lt;/li&gt;
-&lt;li&gt;对于同一层级的一组子节点，它们可以通过唯一id进行区分&lt;/li&gt;
-&lt;/ol&gt;
-    
-    </summary>
-    
-      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="React" scheme="http://1eeing.github.io/tags/React/"/>
-    
-      <category term="diff算法" scheme="http://1eeing.github.io/tags/diff%E7%AE%97%E6%B3%95/"/>
-    
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>【网络篇】UDP 和 TCP</title>
-    <link href="http://1eeing.github.io/2018/08/07/UDP/"/>
-    <id>http://1eeing.github.io/2018/08/07/UDP/</id>
-    <published>2018-08-07T05:55:12.000Z</published>
-    <updated>2018-08-07T10:17:20.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h1><h2 id="面向报文"><a href="#面向报文" class="headerlink" title="面向报文"></a>面向报文</h2><p>UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。</p><p>具体来说</p><ul><li>在发送端，应用层将数据传递给传输层的UDP协议，UDP只会给数据增加一个UDP头标识下是UDP协议，然后就传递给网络层了</li><li>在接收端，网络层将数据传递给传输层，UDP只去除IP报文头就传递给应用层，不会任何拼接操作</li></ul><h2 id="不可靠性"><a href="#不可靠性" class="headerlink" title="不可靠性"></a>不可靠性</h2><ol><li>UDP是无连接的，也就是说通信不需要建立和断开。</li><li>UDP是不可靠的，协议收到什么数据就传递什么数据，并且也不会备份数据，对方能不能收到也不关心。</li><li>UDP没有拥塞控制，一直会以恒定的速度发送数据。即使网络条件不好，也不会对发送速率进行调整。<ul><li>弊端：在网络条件不好的情况下会导致丢包</li><li>优点：在某些实时性要求高的场景（比如电话会议），就需要使用UDP而不是TCP</li></ul></li></ol><a id="more"></a><h2 id="高效"><a href="#高效" class="headerlink" title="高效"></a>高效</h2><p>因为UDP没有TCP那么复杂，需要保证数据不丢失且有序到达，所以UDP的头部开销小，只有八字节，相比TCP的至少二十字节要少得多，在传输数据报文时是很高效的。</p><p>头部包含了以下数据</p><ul><li>两个十六位的端口号，分别为源端口（可选字段）和目标端口</li><li>整个数据报文的长度</li><li>整个数据报文的校验和（IPv4可选字段），该字段用于发现头部信息和数据中的错误</li></ul><h2 id="传输方式"><a href="#传输方式" class="headerlink" title="传输方式"></a>传输方式</h2><p>UDP不止支持一对一的传输方式，同样支持一对多，多对多，多对一的方式，也就是说UDP提供了单播、多播、广播的功能。</p><h1 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h1><h2 id="头部"><a href="#头部" class="headerlink" title="头部"></a>头部</h2><p>TCP头部比UDP复杂的多，对于TCP头部来说，以下几个字段是很重要的</p><ul><li>Sequence number，这个序号保证了TCP传输的报文都是有序的，对端可以通过序号的顺序拼接报文。</li><li>Acknowledgement Number，这个序号表示数据接收端期望接收的下一个字节的编号是多少，同时也表示上一个序号的数据已经收到</li><li>Window Size，窗口大小，表示还能接收多少字节的数据，用于流量控制</li><li>标识符<ul><li>URG=1：该字段为一表示本数据报的数据部分包含紧急信息，是一个高优先级数据报文，此时紧急指针有效。紧急数据一定位于当前数据包数据部分的最前面，紧急指针表明了紧急数据的尾部。</li><li>ACK=1：该字段为一表示确认号字段有效。此外，TCP还规定在连接建立后传送的所有报文段都必须把ACK置为一。</li><li>PSH=1：该字段为一表示接收端应该立即将数据push给应用层，而不是等到缓冲区满后再提交。</li><li>RST=1：该字段为一表示当前TCP连接出现严重问题，可能需要重新建立TCP连接，也可以用于拒绝非法的报文段和拒绝连接请求。</li><li>SYN=1：当SYN=1，ACK=0时，表示当前报文段是一个连接请求报文。当SYN=1，ACK=1时，表示当前报文段是一个同意建立连接的应答报文。</li><li>FIN=1：该字段为一表示此报文段是一个释放连接的请求报文。</li></ul></li></ul><h2 id="状态机"><a href="#状态机" class="headerlink" title="状态机"></a>状态机</h2><p>HTTP是无连接的，所以作为下层的TCP协议也是无连接的，虽然看似TCP将两端连接了起来，但是其实只是两端共同维护了一个状态。</p><p>TCP的状态机是很复杂的，并且与建立断开连接时的握手息息相关，接下来就来详细描述下两种握手。<br>在这之前需要了解一个重要的性能指标RTT，该指标表示发送端发送数据到接收到对端数据所需的往返时间。</p><h2 id="建立连接的三次握手"><a href="#建立连接的三次握手" class="headerlink" title="建立连接的三次握手"></a>建立连接的三次握手</h2><p>在TCP协议中，主动发起请求的一端为客户端，被动连接的一端称为服务端。不管是客户端还是服务端，TCP连接建立完成后都能发送和接收数据，所以TCP也是一个全双工的协议。</p><p>起初，两端都为CLOSED状态。在通信开始前，双方都会创建TCB。服务器创建完TCB后变进入LISTEN状态，此时开始等待客户端发送数据。</p><h3 id="第一次握手（请求连接）"><a href="#第一次握手（请求连接）" class="headerlink" title="第一次握手（请求连接）"></a>第一次握手（请求连接）</h3><p>客户端向服务端发送连接请求报文段。该报文段中包含自身的数据通讯初始序号。请求发送后，客户端便进入SYN-SENT状态，<code>x</code>表示客户端的数据通信初始序号。</p><h3 id="第二次握手（同意连接）"><a href="#第二次握手（同意连接）" class="headerlink" title="第二次握手（同意连接）"></a>第二次握手（同意连接）</h3><p>服务端收到连接请求报文段后，如果同意连接，则会发送一个应答，该应答中也会包含自身的数据通讯出书序号，发送完成后便进入SYN-RECEIVED状态。</p><h3 id="第三次握手（确认应答）"><a href="#第三次握手（确认应答）" class="headerlink" title="第三次握手（确认应答）"></a>第三次握手（确认应答）</h3><p>当客户端收到连接同意的应答后，还要向服务端发送一个确认报文。客户端发完这个报文段后便进入ESTABLISHED状态，服务端收到这个应答后也进入ESTABLISHED状态，此时连接建立成功。</p><blockquote><p>第三次握手可以包含数据，通过TCP快速打开（TFO）技术。其实只要涉及到握手的协议，都可以使用类似TFO的方式，客户端和服务端存储相同cookie，下次握手时发出cookie达到减少RTT的目的。</p></blockquote><h3 id="明明两次握手就可以建立起链接，为什么还需要第三次应答"><a href="#明明两次握手就可以建立起链接，为什么还需要第三次应答" class="headerlink" title="明明两次握手就可以建立起链接，为什么还需要第三次应答"></a>明明两次握手就可以建立起链接，为什么还需要第三次应答</h3><p>这是为了防止失效的连接请求报文段被服务端接收，从而产生错误。</p><p>可以想象如下场景：客户端发送了一个连接请求A，但是因为网络原因造成了超时，这时TCP会启动超时重传的机制，再次发送一个连接请求B。此时请求顺利到达服务端，服务端应答完就建立了请求。如果连接请求A在两端关闭后终于抵达了服务端，那么这时服务端会认为客户端又需要建立TCP连接，从而应答了该请求并进入ESTABLISHED状态。此时客户端其实是CLOSED状态，那么就会导致服务端一直等待，造成资源的浪费。</p><blockquote><p>在建立连接中，任意一端掉线，TCP都会重发SYN包，一般会重试五次，在建立连接中可能会遇到SYN FLOOD攻击。遇到这种情况你可以选择调低重试次数或者干脆在不能处理的情况下拒绝请求。</p></blockquote><h2 id="断开连接的四次握手"><a href="#断开连接的四次握手" class="headerlink" title="断开连接的四次握手"></a>断开连接的四次握手</h2><p>TCP是全双工的，在断开连接时两端都需要发送FIN和ACK。</p><h3 id="第一次握手（请求释放）"><a href="#第一次握手（请求释放）" class="headerlink" title="第一次握手（请求释放）"></a>第一次握手（请求释放）</h3><p>若客户端A认为数据发送完成，则它需要向服务端B发送连接释放请求。</p><h3 id="第二次握手（同意释放）"><a href="#第二次握手（同意释放）" class="headerlink" title="第二次握手（同意释放）"></a>第二次握手（同意释放）</h3><p>B收到连接释放请求后，会告诉应用层要释放TCP连接。然后会发送ACK包，并进入CLOSE_WAIT状态，表示A到B的连接已经释放，不接收A发的数据了。但是因为TCP连接是双向的，所以B仍旧可以发送数据给A。</p><h3 id="第三次握手（继续发没发完的请求）"><a href="#第三次握手（继续发没发完的请求）" class="headerlink" title="第三次握手（继续发没发完的请求）"></a>第三次握手（继续发没发完的请求）</h3><p>B如果此时还有没发完的数据会继续发送，完毕后会向A发送连接释放请求，然后B遍进入LAST-ACK状态</p><blockquote><p>通过延迟确认的技术（通常有时间限制，否则对方会误认为需要重传），可以将第二次和第三次握手合并，延迟ACK包的发送。</p></blockquote><h3 id="第四次握手（确认应答）"><a href="#第四次握手（确认应答）" class="headerlink" title="第四次握手（确认应答）"></a>第四次握手（确认应答）</h3><p>A收到释放请求后，向B发送确认应答，此时A进入TIME-WAIT状态。该状态会持续2MSL（最大段生存期，指报文段在网络中生存的时间，超时会被抛弃）时间，若该时间段内没有B的重发请求的话，就进入CLOSED状态。当B收到确认应答后，也便进入CLOSED状态。</p><h3 id="为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？"><a href="#为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？" class="headerlink" title="为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？"></a>为什么A要进入TIME-WAIT状态，等待2MSL时间后才进入CLOSED状态？</h3><p>为了保证B能收到A的确认应答。若A发完确认应答后直接进入CLOSED状态，如果确认应答因为网络问题一直没有到达，那么会造成B不能正常关闭。</p><h2 id="ARQ协议"><a href="#ARQ协议" class="headerlink" title="ARQ协议"></a>ARQ协议</h2><p>ARQ协议也就是超时重传机制。通过确认和超时机制保证了数据的正确发送。包含以下两部分</p><ul><li>停止等待ARQ</li><li>连续ARQ</li></ul><h3 id="停止等待ARQ"><a href="#停止等待ARQ" class="headerlink" title="停止等待ARQ"></a>停止等待ARQ</h3><p><strong><em> 正常传输过程 </em></strong><br>只要A向B发送一段报文，都要停止发送并启动一个定时器，等待对端回应，在定时器时间内接收到对端应答就取消定时器并发送下一段报文。</p><p><strong><em> 报文丢失或出错 </em></strong><br>在报文传输的过程中可能会出现丢包。这时候超时定时器设定的时间就会再次发送丢包的数据直到对端响应，所以需要每次都备份发送的数据。</p><p>即使报文正常的传输到对端，也可能出现在传输过程中报文出错的问题。这时候对端会抛弃该报文并等待A端重传。</p><blockquote><p>一般定时器设定的时间都会大于一个RTT的平均时间。</p></blockquote><p><strong><em> ACK超时或丢失 </em></strong><br>对端传输的应答也可能出现丢失或超时的情况。那么超过定时器时间A端照样会重传报文。这时候B端收到相同序号的报文会丢弃该报文并重传应答，直到A端发送下一个序号的报文。</p><p>在超时的情况下也可康出现应答很迟到达，这时A端会判断该序号是否已经接收过，如果接收过只需要丢弃应答即可。</p><blockquote><p>这个协议的缺点就是传输效率低，在良好的网络环境下每次发送报文都得等待对端的ACK。</p></blockquote><h3 id="连续ARQ"><a href="#连续ARQ" class="headerlink" title="连续ARQ"></a>连续ARQ</h3><p>在连续ARQ中，发送端拥有一个发送窗口，可以在没有收到应答的情况下持续发送窗口内的数据，这样相比停止等待ARQ协议来说减少了等待时间，提高了效率。</p><p><strong><em> 累计确认 </em></strong><br>连续ARQ中，接收端会持续不断收到报文。如果和停止等待ARQ中接收一个报文就发送一个应答一样，就太浪费资源了。通过累积确认，可以在收到多个报文后统一回复一个应答报文。报文中的ACK可以用来告诉发送端这个序号之前的数据已经全部接受到了，下次请发送这个序号+1的数据。</p><p>但是累计确认也有一个弊端。<br>在连续接收报文时，可能会遇到接收到序号5的报文后，并未接到序号6的报文，然而序号7以后的报文已经接收。遇到这种情况时，ACK只能回复6，这样会造成发送端重复发送数据，这种情况下可以通过Sack来解决，这个会在下文说到。</p><h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p>上面讲到了发送窗口。在TCP中，两端都维护着窗口</p><ul><li>发送端窗口</li><li>接收端窗口</li></ul><p>发送端窗口包含已发送但未收到应答的数据和可以发送但是未发送的数据。<br>发送端窗口是由接收端窗口剩余大小决定的。接收方会把当前接收窗口的剩余大小写入应答报文，发送端收到应答后根据该值和当前网络拥塞情况设置发送端窗口大小，所以发送端窗口大小是不断变化的。</p><p>当发送端接收到应答报文后，会随之将窗口进行滑动</p><p>滑动窗口实现了流量控制。接收方通过报文告知发送方还可以发送多少数据，从而保证接收方能够来得及接收数据。</p><h3 id="Zero窗口"><a href="#Zero窗口" class="headerlink" title="Zero窗口"></a>Zero窗口</h3><p>在发送报文的过程中，可能会遇到对端出现零窗口的情况。在该情况下，发送端会停止发送数据，并启动persistent timer。该定时器会定时发送请求给对端，让对端告知窗口大小。在重试次数超过一定次数后，可能会中断TCP连接。</p><h2 id="拥塞处理"><a href="#拥塞处理" class="headerlink" title="拥塞处理"></a>拥塞处理</h2><p>拥塞处理和流量控制不同，后者是作用于接收方，保证接收方来得及接受数据。而前者是作用于网络，防止过多的数据拥塞网络，避免出现网络负载过大的情况。</p><p>拥塞处理包括了四个算法，分别为</p><ul><li>慢开始</li><li>拥塞避免</li><li>快速重传</li><li>快速恢复</li></ul><h3 id="慢开始算法"><a href="#慢开始算法" class="headerlink" title="慢开始算法"></a>慢开始算法</h3><p>顾名思义，就是在传输开始时将发送窗口慢慢指数级扩大，从而避免一开始就传输大量数据导致网络拥塞。<br>具体步骤如下</p><ol><li>连接初始设置拥塞窗口（Congestion Window）为1MSS（一个分段的最大数据量）</li><li>每过一个RTT就将窗口大小乘二</li><li>指数级增长肯定不能没有限制的，所以有一个阈值限制，当窗口大小大于阈值时就会启动拥塞避免算法。</li></ol><h3 id="拥塞避免算法"><a href="#拥塞避免算法" class="headerlink" title="拥塞避免算法"></a>拥塞避免算法</h3><p>此算法相对简单点，每过一个RTT窗口大小只加一，这样能够避免指数级增长导致网络拥塞，慢慢将大小调整到最佳值。</p><p>在传输过程中可能出现定时器超时的情况，这时候TCP会认为网络拥塞了，会马上进行以下步骤：</p><ol><li>将阈值设为当前拥塞窗口的一半</li><li>将拥塞窗口设为1MSS</li><li>启动拥塞避免算法</li></ol><h3 id="快速重传"><a href="#快速重传" class="headerlink" title="快速重传"></a>快速重传</h3><p>快速重传一般和快速恢复一起出现。一旦接收端收到的报文出现失序的情况，接收端只会回复最后一个顺序正确的报文序号（没有Sack的情况下）。如果收到三个重复的ACK，无需等待定时器超时再重发而是启动快速重传。具体算法分为两种：</p><p><strong><em> TCP Taho </em></strong></p><ul><li>将阈值设为当前拥塞窗口的一半</li><li>将拥塞窗口设为1MSS</li><li>重新开始慢开始算法</li></ul><p><strong><em> TCP Reno </em></strong></p><ul><li>拥塞窗口减半</li><li>将阈值设为当前拥塞窗口</li><li>进入快恢复阶段（重发对端需要的包，一旦收到一个新的ACK答复就退出该阶段）</li><li>使用拥塞避免算法</li></ul><h3 id="TCP-New-Reno-改进后的快速恢复"><a href="#TCP-New-Reno-改进后的快速恢复" class="headerlink" title="TCP New Reno 改进后的快速恢复"></a>TCP New Reno 改进后的快速恢复</h3><p>TCP New Reno 算法改进了之前 TCP Reno 算法的缺陷。在之前，快恢复中只要收到一个新的ACK包，就会退出快恢复。</p><p>在 TCP New Reno 中，TCP发送方先记下三个重复ACK的分段的最大序号。</p><p>假如我有一个分段数据是1~10这十个序号的报文，其中丢失了序号为3和7的报文，那么该分段的最大序号就是10。发送端只会收到ACK序号为3的应答。这时候重发序号为3的报文，接收方顺利接收并会发送ACK序号为7的应答。这时候TCP知道对端是有多个包未收到，会继续发送序号为7的报文，接收方顺利接收并会发送ACK序号为11的应答，这时发送端认为这个分段接收端已经顺利接收，接下来会退出快速恢复阶段。</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;UDP&quot;&gt;&lt;a href=&quot;#UDP&quot; class=&quot;headerlink&quot; title=&quot;UDP&quot;&gt;&lt;/a&gt;UDP&lt;/h1&gt;&lt;h2 id=&quot;面向报文&quot;&gt;&lt;a href=&quot;#面向报文&quot; class=&quot;headerlink&quot; title=&quot;面向报文&quot;&gt;&lt;/a&gt;面向报文&lt;/h2&gt;&lt;p&gt;UDP是一个面向报文（报文可以理解为一段段的数据）的协议。意思就是UDP只是报文的搬运工，不会对报文进行任何拆分和拼接操作。&lt;/p&gt;
-&lt;p&gt;具体来说&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;在发送端，应用层将数据传递给传输层的UDP协议，UDP只会给数据增加一个UDP头标识下是UDP协议，然后就传递给网络层了&lt;/li&gt;
-&lt;li&gt;在接收端，网络层将数据传递给传输层，UDP只去除IP报文头就传递给应用层，不会任何拼接操作&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;不可靠性&quot;&gt;&lt;a href=&quot;#不可靠性&quot; class=&quot;headerlink&quot; title=&quot;不可靠性&quot;&gt;&lt;/a&gt;不可靠性&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;UDP是无连接的，也就是说通信不需要建立和断开。&lt;/li&gt;
-&lt;li&gt;UDP是不可靠的，协议收到什么数据就传递什么数据，并且也不会备份数据，对方能不能收到也不关心。&lt;/li&gt;
-&lt;li&gt;UDP没有拥塞控制，一直会以恒定的速度发送数据。即使网络条件不好，也不会对发送速率进行调整。&lt;ul&gt;
-&lt;li&gt;弊端：在网络条件不好的情况下会导致丢包&lt;/li&gt;
-&lt;li&gt;优点：在某些实时性要求高的场景（比如电话会议），就需要使用UDP而不是TCP&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-    
-    </summary>
-    
-      <category term="学习笔记" scheme="http://1eeing.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="学习笔记" scheme="http://1eeing.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-      <category term="基础知识" scheme="http://1eeing.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
-    
-      <category term="计算机通识" scheme="http://1eeing.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%80%9A%E8%AF%86/"/>
-    
-      <category term="网络" scheme="http://1eeing.github.io/tags/%E7%BD%91%E7%BB%9C/"/>
-    
-      <category term="TCP" scheme="http://1eeing.github.io/tags/TCP/"/>
-    
-      <category term="UDP" scheme="http://1eeing.github.io/tags/UDP/"/>
     
   </entry>
   
