@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[通过一个需求揭秘多端编译]]></title>
+    <url>%2F2020%2F03%2F28%2F%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E9%9C%80%E6%B1%82%E6%8F%AD%E7%A7%98%E5%A4%9A%E7%AB%AF%E7%BC%96%E8%AF%91%2F</url>
+    <content type="text"><![CDATA[过年在家办公期间，接到了一个需求，需要将目前的 微信小程序自定义组件 扩展到 支付宝小程序 平台。关于需求的背景和历史这边就暂不多说了，就从上面已说明的内容来看待这个需求吧。接到需求的第一时间，笔者就思考，这不就是多端编译吗？话不多说，那就开搞吧。 背景介绍由于笔者的项目是一个单纯的微信小程序自定义组件，打包工具是rollup，所以，笔者的技术方案是编写一个rollup插件，来支持多端编译。关于rollup和rollup插件的写法本次不作过多介绍，有兴趣的可以看它的官方文档，这边只是介绍一下核心的多端编译流程。 流程介绍微信小程序组件包含 *.json 、 *.js 、 *.wxml 、 *.wxss 这4个文件，要转换成支付宝小程序，其中json文件和wxss文件比较简单，前者原封不动，后者改一下后缀名就好了，主要要修改js和wxml两个文件。 大致流程基本就是如下 差异整理 将代码转成AST树 替换树上的节点 根据新的AST树生成代码 acorn对于js文件，要实现这些功能的话，业界已经有一些出色的工具了。笔者选择了babel，babel内置acorn作为javascript解释器，生成符合estree标准的AST树（可以在https://astexplorer.net/中查看效果）。其次babel的封装很漂亮，除了搭配webpack完成日常的构建工作外，它还提供了 @babel/parser， @babel/generator， @babel/traverse，@babel/types 等优秀的工具包，每个工具包都是单一职责，职责很明确，帮助实现以上的流程（其实rollup内置了acorn实例，不过babel会更好用一些）。其中 @babel/parser 可以将js代码解释为AST树，@babel/generator 将根据AST树生成js代码，@babel/traverse 支持高效地操作AST树的节点，@babel/types 则提供一些判断函数，帮助开发者快速定位节点。 看一个简单的示例12345function sayHello() &#123; console.log('hello')&#125;sayHello(); 对于以上这段代码，通过acorn转换后，得出的AST树如下123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384&#123; "type": "Program", "start": 0, "end": 58, "body": [ &#123; "type": "FunctionDeclaration", "start": 0, "end": 45, "id": &#123; "type": "Identifier", "start": 9, "end": 17, "name": "sayHello" &#125;, "expression": false, "generator": false, "async": false, "params": [], "body": &#123; "type": "BlockStatement", "start": 20, "end": 45, "body": [ &#123; "type": "ExpressionStatement", "start": 23, "end": 43, "expression": &#123; "type": "CallExpression", "start": 23, "end": 43, "callee": &#123; "type": "MemberExpression", "start": 23, "end": 34, "object": &#123; "type": "Identifier", "start": 23, "end": 30, "name": "console" &#125;, "property": &#123; "type": "Identifier", "start": 31, "end": 34, "name": "log" &#125;, "computed": false &#125;, "arguments": [ &#123; "type": "Literal", "start": 35, "end": 42, "value": "hello", "raw": "'hello'" &#125; ] &#125; &#125; ] &#125; &#125;, &#123; "type": "ExpressionStatement", "start": 47, "end": 58, "expression": &#123; "type": "CallExpression", "start": 47, "end": 57, "callee": &#123; "type": "Identifier", "start": 47, "end": 55, "name": "sayHello" &#125;, "arguments": [] &#125; &#125; ], "sourceType": "module"&#125; 对于这段js代码，如果要替换它的方法名为 sayHi、打印出的 hello 替换为 Hi，通过babel，只需要这样做就可以了。 123456789101112131415161718192021222324252627282930import &#123; parse &#125; from "@babel/parser";import traverse from "@babel/traverse";import generate from "@babel/generator";import * as t from "@babel/types";const code = `function sayHello() &#123; console.log('hello')&#125;sayHello();`;const transform = code =&gt; &#123; const ast = parse(code); traverse(ast, &#123; enter(path) &#123; if (t.isIdentifier(path.node, &#123; name: "sayHello" &#125;)) &#123; path.node.name = "sayHi"; &#125; if (t.isLiteral(path.node, &#123; value: "hello" &#125;)) &#123; path.node.value = "Hi"; &#125; &#125; &#125;); const output = generate(ast, &#123;&#125;, code); return output;&#125;;console.log(transform(code).code); 也可以在codeSandbox中查看效果。 关于包的其它使用，可以查看官方手册。 himalaya对于wxml文件，笔者选择了himalaya-wxml，它提供了 parse 和 stringify 两个方法，前者将wxml解释成AST树，后者反之（可以在https://jew.ski/himalaya/中查看效果）。通过 parse 将wxml代码转换成AST树之后，接下去只需要手动递归遍历AST树去替换节点，再将其转换回wxml代码就可以完成工作了。 同样，看一个简单的示例123&lt;div id='main'&gt; &lt;span&gt;hello world&lt;/span&gt;&lt;/div&gt; 对于以上html代码，通过 himalaya 转换后，生成的AST树如下12345678910111213141516171819202122232425262728[ &#123; "type": "element", "tagName": "div", "attributes": [], "children": [ &#123; "type": "text", "content": "\n " &#125;, &#123; "type": "element", "tagName": "span", "attributes": [], "children": [ &#123; "type": "text", "content": "hello world" &#125; ] &#125;, &#123; "type": "text", "content": "\n" &#125; ] &#125;] 对于这段代码html代码，如果要替换它外层 div 的 id 为 container，只需要这样做就可以了。 1234567891011121314151617181920212223242526272829303132333435import &#123; parse, stringify &#125; from "himalaya";const code = `&lt;div id='main'&gt; &lt;span&gt;hello world&lt;/span&gt;&lt;/div&gt;`;const traverse = ast =&gt; &#123; return ast.map(item =&gt; &#123; if (item.type === "element" &amp;&amp; item.attributes) &#123; return &#123; ...item, attributes: item.attributes.map(attr =&gt; &#123; if (attr.key !== "id") &#123; return attr; &#125; return &#123; ...attr, value: "container" &#125;; &#125;) &#125;; &#125; return item; &#125;);&#125;;const transform = code =&gt; &#123; const ast = parse(code); const json = traverse(ast); return stringify(json);&#125;;console.log(transform(code)); 也可以在codeSandbox中查看效果。 核心介绍流程和工具介绍的差不多了，接下来就开始正题吧。首先是整理差异，根据笔者的调研，微信小程序组件要转换成支付宝小程序组件，大致有以下几个改动（只是符合笔者的需求，如果不完全，欢迎补充）： wxml后缀名要改成axml wxss后缀名要改成acss wxml中的属性wx-xxx要改成a-xxx wxml中的事件属性bindxxx要改成onXxx 生命周期attached要替换成onInit 生命周期detached要替换成didUnmount 生命周期pageLifetimes.show要替换成didMount 生命周期pageLifetimes要删除 改后缀名的工作相对简单，交给构建工具，output配置里面指定一下就好了，重点是替换属性。 转换js部分代码如下12345678910111213141516171819202122232425262728293031323334import &#123; parse &#125; from '@babel/parser';import traverse from '@babel/traverse';import generate from '@babel/generator';import * as t from '@babel/types';function transformJs(code: string) &#123; const ast = parse(code); let pp; traverse(ast, &#123; enter(path) &#123; if (t.isIdentifier(path.node, &#123;name: 'attached'&#125;)) &#123; path.node.name = 'onInit'; &#125; if (t.isIdentifier(path.node, &#123;name: 'detached'&#125;)) &#123; path.node.name = 'didUnmount'; pp = path.parentPath; &#125; if(t.isIdentifier(path.node.key, &#123;name: 'show'&#125;))&#123; path.node.key.name = 'didMount'; pp.insertAfter(path.node); &#125; &#125;, exit(path) &#123; if(t.isIdentifier(path.node.key, &#123;name: 'pageLifetimes'&#125;))&#123; path.remove(); &#125; &#125; &#125;); const output = generate(ast, &#123;&#125;, code); return output&#125;export default transformJs 转换wxml部分如下：123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354import &#123; parse, stringify &#125; from 'himalaya-wxml';const traverseKey = (key: string) =&gt; &#123; if(key.startsWith('wx:'))&#123; const postfix = key.slice(3); return `a:$&#123;postfix&#125;`; &#125; if(key === 'catchtouchmove')&#123; return 'catchTouchMove'; &#125; if(key === 'bindtap')&#123; return 'onTap'; &#125; if(key === 'bindload')&#123; return 'onLoad'; &#125; if(key === 'binderror')&#123; return 'onError'; &#125; if(key === 'bindchange')&#123; return 'onChange'; &#125; return key&#125;const traverseAst = (ast: any) =&gt; &#123; return ast.map(item =&gt; &#123; if(item.type !== 'element')&#123; return item; &#125; let res = item; if(item.attributes)&#123; res = &#123; ...item, attributes: item.attributes.map(attr =&gt; (&#123; ...attr, key: traverseKey(attr.key) &#125;)) &#125; &#125; if(item.children)&#123; res.children = traverseAst(item.children); &#125; return res &#125;);&#125;const transformWxml = (code: string) =&gt; &#123; const ast = parse(code); const json = traverseAst(ast); return stringify(json)&#125;export default transformWxml 以上，就拥有了两个转换函数，再之后的工作，就是将这两个函数运行在rollup里，就完成了将微信小程序组件转换成支付宝小程序组件的功能。 总结javascript作为前端最常用的语言，我们不仅要熟悉它，更要能操控它，通过javascript解释器，我们就拥有了操控它的能力。溯本求源，巩固基础，才能在寒冬之中保持内心的平静。]]></content>
+      <categories>
+        <category>个人原创</category>
+      </categories>
+      <tags>
+        <tag>多端编译</tag>
+        <tag>AST</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[从页面输入URL到展现，到底经历了什么？]]></title>
     <url>%2F2019%2F10%2F17%2F%E4%BB%8E%E8%BE%93%E5%85%A5URL%E5%88%B0%E5%B1%95%E7%8E%B0%2F</url>
     <content type="text"><![CDATA[这是一道常见的面试题，这次，我们就来彻底搞懂他。 首先，总的来说，分为以下几个过程 DNS解析 TCP连接 客户端发起HTTP请求 服务端接收请求，并返回对应的HTTP报文 浏览器解析报文、渲染页面 连接结束 具体过程dns解析DNS解析的过程就是寻找哪台机器上有你需要的资源的过程。当你输入网址的时候，其实访问的是他的唯一IP地址，但是IP地址不方便记忆，因此才有了网址。DNS解析就是将网址对应到IP地址的过程。 解析过程 DNS优化 DNS缓存 DNS负载均衡（也称DNS重定向） TCP连接、HTTP请求这里包含了TCP的握手和挥手、HTTPS以及浏览器缓存有关TCP、HTTP和HTTPS的知识请看我另一篇关于这部分知识的记录：http://blog.leeing.site/2018/08/07/HTTP/有关浏览器缓存的知识也可以看我另一篇关于这部分知识的记录：http://blog.leeing.site/2018/08/19/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5/这边就不详细介绍了。 浏览器解析渲染页面浏览器是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建CSSOM树，然后将两棵树合并为一棵render树，等到render树构建完成后，浏览器开始布局渲染并将其绘制到屏幕上。在这个过程中，涉及到两个概念，重绘和回流。DOM中各个元素都需要浏览器去计算其位置和大小，这个过程称为回流。当这些属性都确定下来之后，浏览器便开始绘制内容，这个过程称为重绘。页面在首次加载的时候必然会经历重绘和回流。且回流必定重绘，重绘不一定回流。重绘和回流是非常消耗性能的，尤其是在移动设备上，它会破坏用户体验，有时会造成页面卡顿。所以我们应该尽可能减少重绘和回流。 JS的解析是由浏览器中的JS解析引擎完成的。JS是单线程运行，但是存在一些任务特别耗时，如IO操作。因此，需要一种机制可以先执行排在后面的任务，这就是同步任务和异步任务（宏任务和微任务）。JS的执行机制就可以看做是一个主线程加一个任务队列。同步任务就是放在主线程上执行的任务，异步任务就是放在任务队列中的任务。所有的同步任务在主线程上执行，形成一个执行栈；异步任务有了运行结果就会在任务队列中添加一个事件；脚本执行时先依次运行执行栈，然后会从任务队列中提取事件，运行任务队列中的任务。这个过程不断重复，故而又称为事件循环（event loop）。 浏览器在解析的过程中，如果遇到请求外部资源时，如图片时，请求过程是异步的，并不会影响HTML文档进行加载。但是如果遇到JS文件，HTML会挂起渲染过程，不仅要等到其下载完成还要等其解析执行完毕，才会继续HTML的渲染过程。原因是JS有可能修改DOM结构。CSS的加载不影响JS文件的加载，但是影响JS文件的执行。因此JS代码执行前，浏览器必须保证CSS文件已经下载并加载完毕。这也是为什么建议CSS文件放在HEAD里，script标签包裹的JS文件放在body底部的原因。]]></content>
@@ -78,8 +90,8 @@
       </categories>
       <tags>
         <tag>深入学习</tag>
-        <tag>Mobx</tag>
         <tag>React</tag>
+        <tag>Mobx</tag>
       </tags>
   </entry>
   <entry>
@@ -90,8 +102,8 @@
         <category>译文</category>
       </categories>
       <tags>
-        <tag>Mobx</tag>
         <tag>React</tag>
+        <tag>Mobx</tag>
         <tag>译文</tag>
       </tags>
   </entry>
@@ -161,8 +173,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>学习笔记</tag>
         <tag>网络</tag>
+        <tag>学习笔记</tag>
         <tag>服务器</tag>
         <tag>Nginx</tag>
       </tags>
@@ -207,8 +219,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>浏览器</tag>
         <tag>学习笔记</tag>
+        <tag>浏览器</tag>
         <tag>缓存策略</tag>
       </tags>
   </entry>
@@ -283,8 +295,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>学习笔记</tag>
         <tag>网络</tag>
+        <tag>学习笔记</tag>
         <tag>HTTP</tag>
         <tag>HTTPS</tag>
         <tag>HTTP 2.0</tag>
@@ -301,8 +313,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>浏览器</tag>
         <tag>学习笔记</tag>
+        <tag>浏览器</tag>
         <tag>Event loop</tag>
       </tags>
   </entry>
@@ -329,8 +341,8 @@
       <tags>
         <tag>基础知识</tag>
         <tag>计算机通识</tag>
-        <tag>学习笔记</tag>
         <tag>网络</tag>
+        <tag>学习笔记</tag>
         <tag>TCP</tag>
         <tag>UDP</tag>
       </tags>
